@@ -1,8 +1,8 @@
 package go_zeek_logparse
 
 import (
-	"testing"
 	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 func zeekHeaderGoodCase(t *testing.T) {
