@@ -106,7 +106,9 @@ func parseZeekLogHeader(givenFilename string) (logfileopts *LogFileOpts, err err
 	}
 	typeMap := make(map[string]string)
 
-	defer fHnd.Close()
+	if fHnd != nil {
+		defer fHnd.Close()
+	}
 
 	scanner := bufio.NewScanner(fHnd)
 	var fieldsStr, typesStr string
