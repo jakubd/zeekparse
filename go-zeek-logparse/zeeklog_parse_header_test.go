@@ -83,6 +83,9 @@ func TestIsThisFHndGzipped(t *testing.T) {
 
 func TestParseZeekLogHeader(t *testing.T) {
 	// test a correct formatted header
+	zeekHeaderGoodCase(t, "test_input/proper_header-gzipped.log.gz")
+
+	// test a correct formatted header
 	zeekHeaderGoodCase(t, "test_input/proper_header.log")
 
 	// test case where file doesn't exist
@@ -142,5 +145,5 @@ func TestZeekLogPullVar(t *testing.T) {
 
 func TestGzip(t *testing.T) {
 	// test a correct formatted header
-	zeekHeaderGoodCase(t, "/usr/local/zeek/logs/2020-06-01/dns.01:00:00-02:00:00.log.gz")
+	zeekHeaderGoodCase(t, "test_input/proper_header-gzipped.log.gz")
 }

@@ -79,6 +79,7 @@ func zeekLogPullVar(givenLine, givenSeparator string) (fieldName, fieldValue str
 }
 
 // determines if the given file handler is gzipped or not
+// SIDE EFFECT: this moves through a file so will need to Seek back to original spot
 func isThisFHndGzipped(givenFileHandler *os.File) (isGzipped bool, err error) {
 	var magicByteBuffer [2]byte
 	isGzipped = false
@@ -95,6 +96,9 @@ func isThisFHndGzipped(givenFileHandler *os.File) (isGzipped bool, err error) {
 	return
 }
 
+// set up the file handling and return a pointer to a bufio scanner
+// also returns the os.File and (if exists the gzip.Reader handles)
+// these should be defer closed at whatever context is needed
 func setUpFileParse(givenFilename string) (scanner *bufio.Scanner, fHnd *os.File, gzipReader *gzip.Reader, err error) {
 	var openErr error
 	fHnd, openErr = os.Open(givenFilename)
