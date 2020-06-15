@@ -1,13 +1,39 @@
 package common
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestParseZeekLogHeader(t *testing.T) {
 	broLogFn := "/usr/local/zeek/logs/current/dns.log"
-	_, err := parseZeekLogHeader(broLogFn)
+	data, err := parseZeekLogHeader(broLogFn)
 
 	if err != nil {
 		t.Errorf("error opening a regular log file!")
+	}
+
+	setSetShouldBe := ","
+
+	if data.setSeparator != setSetShouldBe {
+		t.Errorf("set seperator not parsed from log header, should be %s not %s", setSetShouldBe, data.setSeparator)
+	}
+
+	pathShouldBe := "dns"
+
+	if data.path != pathShouldBe {
+		t.Errorf("path not parsed from log header, should be %s not %s", pathShouldBe, data.path)
+	}
+
+	emptySepShouldBe := "(empty)"
+
+	if data.emptyField != emptySepShouldBe {
+		t.Errorf("emptyField not parsing from log header should be %s not %s", emptySepShouldBe, data.emptyField)
+	}
+
+	unsetShouldBe := "-"
+
+	if data.unsetField != unsetShouldBe {
+		t.Errorf("unset not parsing from log header should be %s not %s", unsetShouldBe, data.unsetField)
 	}
 
 	// what if we try to parse a bad file
