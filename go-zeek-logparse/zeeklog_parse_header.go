@@ -135,12 +135,75 @@ func setUpFileParse(givenFilename string) (scanner *bufio.Scanner, fHnd *os.File
 	return
 }
 
+// scan through a given log file with the given *bufio.Scanner and
+// populate logopts with values from the header.
+func scanZeekHeader(givenScanner *bufio.Scanner, logopts *LogFileOpts) (err error) {
+	var fieldsStr, typesStr string
+	typeMap := make(map[string]string)
+
+	for givenScanner.Scan() {
+		thisLine := givenScanner.Text()
+
+		if len(logopts.separator) > 0 {
+
+			if strings.HasPrefix(thisLine, "#") {
+				thisFieldName, thisFieldValue := zeekLogPullVar(thisLine, logopts.separator)
+
+				if len(thisFieldName) > 0 {
+					switch thisFieldName {
+					case "set_separator":
+						logopts.setSeparator = unescapeFieldValue(thisFieldValue)
+					case "unset_field":
+						logopts.unsetField = unescapeFieldValue(thisFieldValue)
+					case "path":
+						logopts.path = unescapeFieldValue(thisFieldValue)
+					case "empty_field":
+						logopts.emptyField = unescapeFieldValue(thisFieldValue)
+					case "open":
+						var dateParseErr error
+						logopts.open, dateParseErr = time.Parse(ZeekDateTimeFmt, thisFieldValue)
+						if dateParseErr != nil {
+							err = errors.New("date not parsed for open field")
+						}
+					case "fields":
+						fieldsStr = thisLine
+					case "types":
+						typesStr = thisLine
+					}
+				}
+			}
+
+		} else {
+			// pull separator here to read the other vars from the header
+			if strings.HasPrefix(thisLine, "#separator") {
+				logopts.separator = zeekLogLineToSeparator(thisLine)
+			}
+		}
+
+		if len(fieldsStr) > 0 && len(typesStr) > 0 && len(typeMap) == 0 {
+			splitFields := strings.Fields(fieldsStr)
+			splitTypes := strings.Fields(typesStr)
+
+			splitFields = splitFields[1:]
+			splitTypes = splitTypes[1:]
+
+			if len(splitTypes) == len(splitFields) {
+				for idx := range splitFields {
+					typeMap[splitFields[idx]] = splitTypes[idx]
+				}
+				logopts.fieldMapping = typeMap
+			} else {
+				err = errors.New("mismatched header fields")
+			}
+
+		}
+
+	}
+	return
+}
+
 // parses the header of zeek log files and returns options as the LogFileOpts struct
 func parseZeekLogHeader(givenFilename string) (logfileopts *LogFileOpts, err error) {
-
-	err = nil
-	l := LogFileOpts{}
-	typeMap := make(map[string]string)
 
 	scanner, fHnd, gzipReader, fileSetupErr := setUpFileParse(givenFilename)
 
@@ -156,64 +219,12 @@ func parseZeekLogHeader(givenFilename string) (logfileopts *LogFileOpts, err err
 		return
 	}
 
-	var fieldsStr, typesStr string
-	for scanner.Scan() {
-		thisLine := scanner.Text()
+	l := LogFileOpts{}
+	scanErr := scanZeekHeader(scanner, &l)
 
-		if len(l.separator) > 0 {
-
-			if strings.HasPrefix(thisLine, "#") {
-				thisFieldName, thisFieldValue := zeekLogPullVar(thisLine, l.separator)
-
-				if len(thisFieldName) > 0 {
-					switch thisFieldName {
-					case "set_separator":
-						l.setSeparator = unescapeFieldValue(thisFieldValue)
-					case "unset_field":
-						l.unsetField = unescapeFieldValue(thisFieldValue)
-					case "path":
-						l.path = unescapeFieldValue(thisFieldValue)
-					case "empty_field":
-						l.emptyField = unescapeFieldValue(thisFieldValue)
-					case "open":
-						var dateParseErr error
-						l.open, dateParseErr = time.Parse(ZeekDateTimeFmt, thisFieldValue)
-						if dateParseErr != nil {
-							err = errors.New("date not parsed for open field")
-						}
-					case "fields":
-						fieldsStr = thisLine
-					case "types":
-						typesStr = thisLine
-					}
-				}
-			}
-
-		} else {
-			// pull separator here to read the other vars from the header
-			if strings.HasPrefix(thisLine, "#separator") {
-				l.separator = zeekLogLineToSeparator(thisLine)
-			}
-		}
-
-		if len(fieldsStr) > 0 && len(typesStr) > 0 && len(typeMap) == 0 {
-			splitFields := strings.Fields(fieldsStr)
-			splitTypes := strings.Fields(typesStr)
-
-			splitFields = splitFields[1:]
-			splitTypes = splitTypes[1:]
-
-			if len(splitTypes) == len(splitFields) {
-				for idx := range splitFields {
-					typeMap[splitFields[idx]] = splitTypes[idx]
-				}
-				l.fieldMapping = typeMap
-			} else {
-				err = errors.New("mismatched header fields")
-			}
-
-		}
-
+	if scanErr != nil {
+		err = scanErr
+		return
 	}
 
 	return &l, err
