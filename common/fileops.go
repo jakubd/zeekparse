@@ -3,8 +3,8 @@ package common
 import (
 	"bufio"
 	"encoding/hex"
+	"errors"
 	"fmt"
-	log "github.com/sirupsen/logrus"
 	"os"
 	"strings"
 	"time"
@@ -51,7 +51,7 @@ func zeekLogLineToSeparator(givenLine string) (separator string) {
 }
 
 func zeekLogPullVar(givenLine, givenSeparator string) (fieldName, fieldValue string) {
-	// pull a simple space delimited variable from the bro logs
+	// pull a simple space delimited variable from the zeek logs
 	if !strings.HasPrefix(givenLine, "#") {
 		return
 	}
@@ -67,13 +67,14 @@ func zeekLogPullVar(givenLine, givenSeparator string) (fieldName, fieldValue str
 	return
 }
 
-func parseZeekLogHeader(givenFilename string) {
+func parseZeekLogHeader(givenFilename string) (l LogFileOpts, err error) {
 	// TODO: implement this
 	// parses the header of zeek log files
-	fHnd, err := os.Open(givenFilename)
-	l := LogFileOpts{}
-	if err != nil {
-		log.Fatal("cannot open file ")
+	err = nil
+	fHnd, openErr := os.Open(givenFilename)
+	if openErr != nil {
+		err = errors.New("open file error")
+		return
 	}
 
 	defer fHnd.Close()
@@ -97,6 +98,7 @@ func parseZeekLogHeader(givenFilename string) {
 			//if !strings.HasPrefix(thisLine, "#") {
 			//	fmt.Println(thisLine) // these are proper lines
 			//}
+
 		} else {
 			// pull prefix
 			if strings.HasPrefix(thisLine, "#separator") {
@@ -106,4 +108,5 @@ func parseZeekLogHeader(givenFilename string) {
 	}
 
 	fmt.Println("done")
+	return
 }
