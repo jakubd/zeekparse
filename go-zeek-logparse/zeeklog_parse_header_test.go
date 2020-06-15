@@ -6,9 +6,8 @@ import (
 	"testing"
 )
 
-func zeekHeaderGoodCase(t *testing.T) {
-	zeekLogFn := "test_input/proper_header.log"
-	data, err := parseZeekLogHeader(zeekLogFn)
+func zeekHeaderGoodCase(t *testing.T, givenFilename string) {
+	data, err := parseZeekLogHeader(givenFilename)
 
 	assert.NoError(t, err)
 	assert.NotEqual(t, data.open.Year(), 0001)
@@ -83,9 +82,8 @@ func TestIsThisFHndGzipped(t *testing.T) {
 }
 
 func TestParseZeekLogHeader(t *testing.T) {
-
 	// test a correct formatted header
-	zeekHeaderGoodCase(t)
+	zeekHeaderGoodCase(t, "test_input/proper_header.log")
 
 	// test case where file doesn't exist
 	zeekHeaderFileDoesntExist(t)
@@ -140,4 +138,9 @@ func TestZeekLogPullVar(t *testing.T) {
 	field, value = zeekLogPullVar(input, " ")
 	assert.Equal(t, field, allShouldBe)
 	assert.Equal(t, value, allShouldBe)
+}
+
+func TestGzip(t *testing.T) {
+	// test a correct formatted header
+	zeekHeaderGoodCase(t, "/usr/local/zeek/logs/2020-06-01/dns.01:00:00-02:00:00.log.gz")
 }

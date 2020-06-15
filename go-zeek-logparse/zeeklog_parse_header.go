@@ -2,6 +2,7 @@ package zeekparse
 
 import (
 	"bufio"
+	"compress/gzip"
 	"encoding/hex"
 	"errors"
 	"io"
@@ -94,23 +95,63 @@ func isThisFHndGzipped(givenFileHandler *os.File) (isGzipped bool, err error) {
 	return
 }
 
+func setUpFileParse(givenFilename string) (scanner *bufio.Scanner, fHnd *os.File, gzipReader *gzip.Reader, err error) {
+	var openErr error
+	fHnd, openErr = os.Open(givenFilename)
+	if openErr != nil {
+		err = errors.New("open file error")
+		return
+	}
+
+	gzipped, gzipErr := isThisFHndGzipped(fHnd)
+	if gzipErr != nil {
+		err = gzipErr
+		return
+	}
+
+	// reset the seek since we read some bytes in when isThisFHndGzipped is called
+	_, seekErr := fHnd.Seek(0, 0)
+	if seekErr != nil {
+		err = seekErr
+		return
+	}
+
+	if gzipped {
+		var gzReadErr error
+		gzipReader, gzReadErr = gzip.NewReader(fHnd)
+		if gzReadErr != nil {
+			err = gzReadErr
+			return
+		}
+		scanner = bufio.NewScanner(gzipReader)
+	} else {
+		scanner = bufio.NewScanner(fHnd)
+	}
+
+	return
+}
+
 // parses the header of zeek log files and returns options as the LogFileOpts struct
 func parseZeekLogHeader(givenFilename string) (logfileopts *LogFileOpts, err error) {
 
 	err = nil
 	l := LogFileOpts{}
-	fHnd, openErr := os.Open(givenFilename)
-	if openErr != nil {
-		err = errors.New("open file error")
-		return &l, err
-	}
 	typeMap := make(map[string]string)
+
+	scanner, fHnd, gzipReader, fileSetupErr := setUpFileParse(givenFilename)
 
 	if fHnd != nil {
 		defer fHnd.Close()
 	}
+	if gzipReader != nil {
+		defer gzipReader.Close()
+	}
 
-	scanner := bufio.NewScanner(fHnd)
+	if fileSetupErr != nil {
+		err = fileSetupErr
+		return
+	}
+
 	var fieldsStr, typesStr string
 	for scanner.Scan() {
 		thisLine := scanner.Text()
