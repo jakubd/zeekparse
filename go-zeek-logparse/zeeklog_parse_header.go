@@ -1,4 +1,4 @@
-package common
+package go_zeek_logparse
 
 import (
 	"bufio"
@@ -20,12 +20,11 @@ type LogFileOpts struct {
 	fieldMapping map[string]string
 }
 
+const ZeekDateTimeFmt = "2006-01-02-15-04-05"
 
-const BroDateTimeFmt = "2006-01-02-03-04-05"
-
+// many zeek field values in the header will be hex encoded
+// ie: tab char = \x09 convert these to real chars
 func UnescapeFieldValue(givenValue string) (value string) {
-	// many zeek field values in the header will be hex encoded
-	// ie: tab char = \x09 convert these to real chars
 	if strings.HasPrefix(givenValue, "\\x") {
 		separatorValueAsHexString := strings.ReplaceAll(givenValue, "\\x", "")
 		separatorSlice, _ := hex.DecodeString(separatorValueAsHexString)
@@ -40,9 +39,9 @@ func UnescapeFieldValue(givenValue string) (value string) {
 	return
 }
 
+// given a string from a zeek log pull the separator character
+// used to parse the rest of the logfile.
 func zeekLogLineToSeparator(givenLine string) (separator string) {
-	// given a string from a zeek log pull the separator character
-	// used to parse the rest of the logfile.
 	separator = ""
 
 	if !strings.HasPrefix(givenLine, "#separator") {
@@ -60,8 +59,8 @@ func zeekLogLineToSeparator(givenLine string) (separator string) {
 	return
 }
 
+// pull a simple space delimited variable from the zeek logs
 func zeekLogPullVar(givenLine, givenSeparator string) (fieldName, fieldValue string) {
-	// pull a simple space delimited variable from the zeek logs
 	if !strings.HasPrefix(givenLine, "#") {
 		return
 	}
@@ -77,9 +76,8 @@ func zeekLogPullVar(givenLine, givenSeparator string) (fieldName, fieldValue str
 	return
 }
 
+// parses the header of zeek log files and returns options as the LogFileOpts struct
 func parseZeekLogHeader(givenFilename string) (logfileopts *LogFileOpts, err error) {
-	// TODO: implement this
-	// parses the header of zeek log files
 
 	err = nil
 	l := LogFileOpts{}
@@ -114,7 +112,7 @@ func parseZeekLogHeader(givenFilename string) (logfileopts *LogFileOpts, err err
 						l.emptyField = UnescapeFieldValue(thisFieldValue)
 					case "open":
 						var dateParseErr error
-						l.open, dateParseErr = time.Parse(BroDateTimeFmt, thisFieldValue)
+						l.open, dateParseErr = time.Parse(ZeekDateTimeFmt, thisFieldValue)
 						if dateParseErr != nil {
 							err = errors.New("date not parsed for open field")
 						}
@@ -146,7 +144,7 @@ func parseZeekLogHeader(givenFilename string) (logfileopts *LogFileOpts, err err
 				}
 				l.fieldMapping = typeMap
 			} else {
-				err = errors.New("mismatch between fields and types in zeek log file header")
+				err = errors.New("mismatched header fields")
 			}
 
 		}
