@@ -17,6 +17,7 @@ type LogFileOpts struct {
 	unsetField string
 	path string
 	open time.Time
+	fieldMapping map[string]string
 }
 
 
@@ -79,6 +80,7 @@ func zeekLogPullVar(givenLine, givenSeparator string) (fieldName, fieldValue str
 func parseZeekLogHeader(givenFilename string) (logfileopts *LogFileOpts, err error) {
 	// TODO: implement this
 	// parses the header of zeek log files
+
 	err = nil
 	l := LogFileOpts{}
 	fHnd, openErr := os.Open(givenFilename)
@@ -86,10 +88,12 @@ func parseZeekLogHeader(givenFilename string) (logfileopts *LogFileOpts, err err
 		err = errors.New("open file error")
 		return &l, err
 	}
+	typeMap := make(map[string]string)
 
 	defer fHnd.Close()
 
 	scanner := bufio.NewScanner(fHnd)
+	var fieldsStr, typesStr string
 	for scanner.Scan() {
 		thisLine := scanner.Text()
 
@@ -114,6 +118,10 @@ func parseZeekLogHeader(givenFilename string) (logfileopts *LogFileOpts, err err
 						if dateParseErr != nil {
 							err = errors.New("date not parsed for open field")
 						}
+					case "fields":
+						fieldsStr = thisLine
+					case "types":
+						typesStr = thisLine
 					}
 				}
 			}
@@ -124,6 +132,25 @@ func parseZeekLogHeader(givenFilename string) (logfileopts *LogFileOpts, err err
 				l.separator = zeekLogLineToSeparator(thisLine)
 			}
 		}
+
+		if len(fieldsStr) > 0 && len(typesStr) > 0 && len(typeMap) == 0{
+			splitFields := strings.Fields(fieldsStr)
+			splitTypes := strings.Fields(typesStr)
+
+			splitFields = splitFields[1:]
+			splitTypes = splitTypes[1:]
+
+			if len(splitTypes) == len(splitFields){
+				for idx, _ := range splitFields {
+					typeMap[splitFields[idx]] = splitTypes[idx]
+				}
+				l.fieldMapping = typeMap
+			} else {
+				err = errors.New("mismatch between fields and types in zeek log file header")
+			}
+
+		}
+
 	}
 
 	return &l, err

@@ -34,6 +34,10 @@ func TestParseZeekLogHeader(t *testing.T) {
 	unsetShouldBe := "-"
 	shouldBeString(t, data.unsetField, unsetShouldBe)
 
+	if len(data.fieldMapping) == 0 {
+		t.Errorf("fieldMapping was blank when parsing zeek log header")
+	}
+
 	// what if we try to parse a bad file
 	broLogFn = "/usr/local/zeek/logs/current/dndsfs.log"
 	_, err = parseZeekLogHeader(broLogFn)
