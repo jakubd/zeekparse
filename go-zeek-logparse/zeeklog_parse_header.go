@@ -1,4 +1,4 @@
-package go_zeek_logparse
+package zeekparse
 
 import (
 	"bufio"
@@ -11,12 +11,12 @@ import (
 
 // these are the normally included vars in the header
 type LogFileOpts struct {
-	separator string
+	separator    string
 	setSeparator string
-	emptyField string
-	unsetField string
-	path string
-	open time.Time
+	emptyField   string
+	unsetField   string
+	path         string
+	open         time.Time
 	fieldMapping map[string]string
 }
 
@@ -131,15 +131,15 @@ func parseZeekLogHeader(givenFilename string) (logfileopts *LogFileOpts, err err
 			}
 		}
 
-		if len(fieldsStr) > 0 && len(typesStr) > 0 && len(typeMap) == 0{
+		if len(fieldsStr) > 0 && len(typesStr) > 0 && len(typeMap) == 0 {
 			splitFields := strings.Fields(fieldsStr)
 			splitTypes := strings.Fields(typesStr)
 
 			splitFields = splitFields[1:]
 			splitTypes = splitTypes[1:]
 
-			if len(splitTypes) == len(splitFields){
-				for idx, _ := range splitFields {
+			if len(splitTypes) == len(splitFields) {
+				for idx := range splitFields {
 					typeMap[splitFields[idx]] = splitTypes[idx]
 				}
 				l.fieldMapping = typeMap

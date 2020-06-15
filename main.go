@@ -4,7 +4,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func setUpLogger(){
+func setUpLogger() {
 	formatter := &log.TextFormatter{
 		FullTimestamp: true,
 	}
@@ -12,11 +12,10 @@ func setUpLogger(){
 	log.SetLevel(log.InfoLevel)
 }
 
-func main(){
+func main() {
 
 	setUpLogger()
 	log.Info("started main func")
-
 
 	log.Info("ended main func")
 }

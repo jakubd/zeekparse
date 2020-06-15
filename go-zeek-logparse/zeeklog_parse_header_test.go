@@ -1,4 +1,4 @@
-package go_zeek_logparse
+package zeekparse
 
 import (
 	"github.com/stretchr/testify/assert"
@@ -27,15 +27,15 @@ func zeekHeaderFileDoesntExist(t *testing.T) {
 }
 
 func zeekHeaderFieldsMismatched(t *testing.T) {
-	broLogFn :=  "test_input/mismatched_fields_header.log"
+	broLogFn := "test_input/mismatched_fields_header.log"
 	_, err := parseZeekLogHeader(broLogFn)
 	assert.EqualError(t, err, "mismatched header fields")
 }
 
 func zeekHeaderDateFieldParseFail(t *testing.T) {
-	broLogFn :=  "test_input/bad_dates_header.log"
+	broLogFn := "test_input/bad_dates_header.log"
 	_, err := parseZeekLogHeader(broLogFn)
-	assert.EqualError(t, err,"date not parsed for open field" )
+	assert.EqualError(t, err, "date not parsed for open field")
 }
 
 func TestParseZeekLogHeader(t *testing.T) {
@@ -61,7 +61,7 @@ func TestUnescapeFieldValue(t *testing.T) {
 	assert.Equal(t, result, shouldBe)
 
 	encodedInput := "\x09"
-	shouldBe =  "	"
+	shouldBe = "	"
 
 	result = UnescapeFieldValue(encodedInput)
 	assert.Equal(t, result, shouldBe)
