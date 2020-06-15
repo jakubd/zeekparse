@@ -74,14 +74,15 @@ func zeekLogPullVar(givenLine, givenSeparator string) (fieldName, fieldValue str
 	return
 }
 
-func parseZeekLogHeader(givenFilename string) (l LogFileOpts, err error) {
+func parseZeekLogHeader(givenFilename string) (logfileopts *LogFileOpts, err error) {
 	// TODO: implement this
 	// parses the header of zeek log files
 	err = nil
+	l := LogFileOpts{}
 	fHnd, openErr := os.Open(givenFilename)
 	if openErr != nil {
 		err = errors.New("open file error")
-		return
+		return &l, err
 	}
 
 	defer fHnd.Close()
@@ -123,5 +124,5 @@ func parseZeekLogHeader(givenFilename string) (l LogFileOpts, err error) {
 	}
 
 	fmt.Println("done")
-	return
+	return &l, err
 }
