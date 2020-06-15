@@ -20,6 +20,23 @@ type LogFileOpts struct {
 	open time.Time
 }
 
+func UnescapeFieldValue(givenValue string) (value string) {
+	// many zeek field values in the header will be hex encoded
+	// ie: tab char = \x09 convert these to real chars
+	if strings.HasPrefix(givenValue, "\\x") {
+		separatorValueAsHexString := strings.ReplaceAll(givenValue, "\\x", "")
+		separatorSlice, _ := hex.DecodeString(separatorValueAsHexString)
+		if len(separatorSlice) == 1 {
+			separatorUInt8 := separatorSlice[0]
+			value = string(separatorUInt8)
+			return
+		}
+	} else {
+		value = givenValue
+	}
+	return
+}
+
 func zeekLogLineToSeparator(givenLine string) (separator string) {
 	// given a string from a zeek log pull the separator character
 	// used to parse the rest of the logfile.
@@ -34,17 +51,7 @@ func zeekLogLineToSeparator(givenLine string) (separator string) {
 
 	if field == "separator" {
 		separatorValue := val
-		if strings.HasPrefix(separatorValue, "\\x") {
-			separatorValueAsHexString := strings.ReplaceAll(separatorValue, "\\x", "")
-			separatorSlice, _ := hex.DecodeString(separatorValueAsHexString)
-			if len(separatorSlice) == 1 {
-				separatorUInt8 := separatorSlice[0]
-				separator = string(separatorUInt8)
-				return
-			}
-		} else {
-			separator = separatorValue
-		}
+		separator = UnescapeFieldValue(separatorValue)
 	}
 
 	return
@@ -86,12 +93,20 @@ func parseZeekLogHeader(givenFilename string) (l LogFileOpts, err error) {
 		if len(l.separator) > 0 {
 
 			if strings.HasPrefix(thisLine, "#") {
-				//fmt.Println(thisLine) // these are additional headers
-
 				thisFieldName, thisFieldValue := zeekLogPullVar(thisLine, l.separator)
 
-				if len(thisFieldName) > 0 && thisFieldName != "separator" {
+				if len(thisFieldName) > 0 {
 					fmt.Println(thisFieldName, thisFieldValue)
+					switch thisFieldName {
+					case "set_separator":
+						l.setSeparator = UnescapeFieldValue(thisFieldValue)
+					case "unset_field":
+						l.unsetField = UnescapeFieldValue(thisFieldValue)
+					case "path":
+						l.path = UnescapeFieldValue(thisFieldValue)
+					case "empty_field":
+						l.emptyField = UnescapeFieldValue(thisFieldValue)
+					}
 				}
 			}
 

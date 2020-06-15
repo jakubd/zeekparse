@@ -2,18 +2,41 @@ package common
 
 import "testing"
 
-func TestOpenFile(t *testing.T) {
+func TestParseZeekLogHeader(t *testing.T) {
 	broLogFn := "/usr/local/zeek/logs/current/dns.log"
-	parseZeekLogHeader(broLogFn)
+	_, err := parseZeekLogHeader(broLogFn)
+
+	if err != nil {
+		t.Errorf("error opening a regular log file!")
+	}
 
 	// what if we try to parse a bad file
 	broLogFn = "/usr/local/zeek/logs/current/dndsfs.log"
-	_, err := parseZeekLogHeader(broLogFn)
+	_, err = parseZeekLogHeader(broLogFn)
 	errShouldBe := "open file error"
 	if err.Error() != errShouldBe {
 		t.Errorf("error mismatch should %s but is %s", errShouldBe, err)
 	}
 
+}
+
+func TestUnescapeFieldValue(t *testing.T) {
+	input := "something easy"
+	shouldBe := "something easy"
+
+	result := UnescapeFieldValue(input)
+
+	if result != shouldBe {
+		t.Errorf("unescape err should be %s but was %s", shouldBe, result)
+	}
+
+	encodedInput := "\x09"
+	shouldBe =  "	"
+
+	result = UnescapeFieldValue(encodedInput)
+	if result != shouldBe {
+		t.Errorf("unescape err should be %s but was %s", shouldBe, result)
+	}
 }
 
 func TestZeekLogLineToSeparator(t *testing.T) {
