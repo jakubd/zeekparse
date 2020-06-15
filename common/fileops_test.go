@@ -4,6 +4,12 @@ import (
 	"testing"
 )
 
+func shouldBeString(t *testing.T, value, shouldbe string) {
+	if value != shouldbe {
+		t.Errorf("value should be %s not %s", shouldbe, value)
+	}
+}
+
 func TestParseZeekLogHeader(t *testing.T) {
 	broLogFn := "/usr/local/zeek/logs/current/dns.log"
 	data, err := parseZeekLogHeader(broLogFn)
@@ -13,28 +19,16 @@ func TestParseZeekLogHeader(t *testing.T) {
 	}
 
 	setSetShouldBe := ","
-
-	if data.setSeparator != setSetShouldBe {
-		t.Errorf("set seperator not parsed from log header, should be %s not %s", setSetShouldBe, data.setSeparator)
-	}
+	shouldBeString(t, data.setSeparator, setSetShouldBe)
 
 	pathShouldBe := "dns"
-
-	if data.path != pathShouldBe {
-		t.Errorf("path not parsed from log header, should be %s not %s", pathShouldBe, data.path)
-	}
+	shouldBeString(t, data.path, pathShouldBe)
 
 	emptySepShouldBe := "(empty)"
-
-	if data.emptyField != emptySepShouldBe {
-		t.Errorf("emptyField not parsing from log header should be %s not %s", emptySepShouldBe, data.emptyField)
-	}
+	shouldBeString(t, data.emptyField, emptySepShouldBe)
 
 	unsetShouldBe := "-"
-
-	if data.unsetField != unsetShouldBe {
-		t.Errorf("unset not parsing from log header should be %s not %s", unsetShouldBe, data.unsetField)
-	}
+	shouldBeString(t, data.unsetField, unsetShouldBe)
 
 	// what if we try to parse a bad file
 	broLogFn = "/usr/local/zeek/logs/current/dndsfs.log"
@@ -51,41 +45,30 @@ func TestUnescapeFieldValue(t *testing.T) {
 	shouldBe := "something easy"
 
 	result := UnescapeFieldValue(input)
-
-	if result != shouldBe {
-		t.Errorf("unescape err should be %s but was %s", shouldBe, result)
-	}
+	shouldBeString(t, result, shouldBe)
 
 	encodedInput := "\x09"
 	shouldBe =  "	"
 
 	result = UnescapeFieldValue(encodedInput)
-	if result != shouldBe {
-		t.Errorf("unescape err should be %s but was %s", shouldBe, result)
-	}
+	shouldBeString(t, result, shouldBe)
 }
 
 func TestZeekLogLineToSeparator(t *testing.T) {
 	inputWithHex := "#separator \\x09"
 	sep := zeekLogLineToSeparator(inputWithHex)
 	shouldBe := "	"
-	if sep != shouldBe {
-		t.Errorf("seperator should have been '%s' but was '%s'", shouldBe, sep)
-	}
+	shouldBeString(t, sep, shouldBe)
 
 	inputComma := "#separator ,"
 	sep = zeekLogLineToSeparator(inputComma)
 	shouldBe = ","
-	if sep != shouldBe {
-		t.Errorf("seperator should have been '%s' but was '%s'", shouldBe, sep)
-	}
+	shouldBeString(t, sep, shouldBe)
 
 	inputShouldntBeProcessed := "hello"
 	sep = zeekLogLineToSeparator(inputShouldntBeProcessed)
 	shouldBe = ""
-	if sep != shouldBe {
-		t.Errorf("seperator should not have been processed when input was '%s'", inputShouldntBeProcessed)
-	}
+	shouldBeString(t, sep, shouldBe)
 }
 
 func TestZeekLogPullVar(t *testing.T) {
@@ -94,25 +77,14 @@ func TestZeekLogPullVar(t *testing.T) {
 	valueShouldBe := "value"
 
 	field, value := zeekLogPullVar(input, " ")
-
-	if field != fieldShouldBe {
-		t.Errorf("field should be %s but was %s", fieldShouldBe, field)
-	}
-
-	if value != valueShouldBe {
-		t.Errorf("value should be %s but was %s", valueShouldBe, value)
-	}
+	shouldBeString(t, field, fieldShouldBe)
+	shouldBeString(t, value, valueShouldBe)
 
 	input = "dummyField value"
 	allShouldBe := ""
 
 	field, value = zeekLogPullVar(input, " ")
 
-	if field != allShouldBe {
-		t.Errorf("field should be %s but is %s", allShouldBe, field)
-	}
-
-	if value != allShouldBe {
-		t.Errorf("value should be %s but is %s", allShouldBe, value)
-	}
+	shouldBeString(t, field, allShouldBe)
+	shouldBeString(t, value, allShouldBe)
 }
