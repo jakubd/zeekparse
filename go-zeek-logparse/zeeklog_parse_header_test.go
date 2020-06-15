@@ -57,13 +57,13 @@ func TestUnescapeFieldValue(t *testing.T) {
 	input := "something easy"
 	shouldBe := "something easy"
 
-	result := UnescapeFieldValue(input)
+	result := unescapeFieldValue(input)
 	assert.Equal(t, result, shouldBe)
 
 	encodedInput := "\x09"
 	shouldBe = "	"
 
-	result = UnescapeFieldValue(encodedInput)
+	result = unescapeFieldValue(encodedInput)
 	assert.Equal(t, result, shouldBe)
 }
 

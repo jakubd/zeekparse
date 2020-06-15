@@ -9,7 +9,6 @@ import (
 	"time"
 )
 
-// these are the normally included vars in the header
 type LogFileOpts struct {
 	separator    string
 	setSeparator string
@@ -18,13 +17,13 @@ type LogFileOpts struct {
 	path         string
 	open         time.Time
 	fieldMapping map[string]string
-}
+} // these are the normally included vars in the header
 
-const ZeekDateTimeFmt = "2006-01-02-15-04-05"
+const ZeekDateTimeFmt = "2006-01-02-15-04-05"	// common format for zeek header datetimes
 
 // many zeek field values in the header will be hex encoded
 // ie: tab char = \x09 convert these to real chars
-func UnescapeFieldValue(givenValue string) (value string) {
+func unescapeFieldValue(givenValue string) (value string) {
 	if strings.HasPrefix(givenValue, "\\x") {
 		separatorValueAsHexString := strings.ReplaceAll(givenValue, "\\x", "")
 		separatorSlice, _ := hex.DecodeString(separatorValueAsHexString)
@@ -53,7 +52,7 @@ func zeekLogLineToSeparator(givenLine string) (separator string) {
 
 	if field == "separator" {
 		separatorValue := val
-		separator = UnescapeFieldValue(separatorValue)
+		separator = unescapeFieldValue(separatorValue)
 	}
 
 	return
@@ -103,13 +102,13 @@ func parseZeekLogHeader(givenFilename string) (logfileopts *LogFileOpts, err err
 				if len(thisFieldName) > 0 {
 					switch thisFieldName {
 					case "set_separator":
-						l.setSeparator = UnescapeFieldValue(thisFieldValue)
+						l.setSeparator = unescapeFieldValue(thisFieldValue)
 					case "unset_field":
-						l.unsetField = UnescapeFieldValue(thisFieldValue)
+						l.unsetField = unescapeFieldValue(thisFieldValue)
 					case "path":
-						l.path = UnescapeFieldValue(thisFieldValue)
+						l.path = unescapeFieldValue(thisFieldValue)
 					case "empty_field":
-						l.emptyField = UnescapeFieldValue(thisFieldValue)
+						l.emptyField = unescapeFieldValue(thisFieldValue)
 					case "open":
 						var dateParseErr error
 						l.open, dateParseErr = time.Parse(ZeekDateTimeFmt, thisFieldValue)
