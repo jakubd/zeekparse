@@ -8,20 +8,16 @@ import (
 func zeekHeaderGoodCase(t *testing.T) {
 	zeekLogFn := "test_input/proper_header.log"
 	data, err := parseZeekLogHeader(zeekLogFn)
+
 	assert.NoError(t, err)
+	assert.NotEqual(t, data.open.Year(), 0001)
 
-	if data.open.Year() == 0001 {
-		t.Errorf("date wasnt parsed out of open")
-	}
-
+	assert.Equal(t, data.open.Year(), 2020)
 	assert.Equal(t, data.setSeparator, ",")
 	assert.Equal(t, data.path, "dns")
 	assert.Equal(t, data.emptyField, "(empty)")
 	assert.Equal(t, data.unsetField, "-")
-
-	if len(data.fieldMapping) == 0 {
-		t.Errorf("fieldMapping was blank when parsing zeek log header")
-	}
+	assert.True(t, len(data.fieldMapping) > 0)
 }
 
 func zeekHeaderFileDoesntExist(t *testing.T) {
