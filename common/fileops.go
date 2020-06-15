@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"encoding/hex"
 	"errors"
-	"fmt"
 	"os"
 	"strings"
 	"time"
@@ -19,6 +18,9 @@ type LogFileOpts struct {
 	path string
 	open time.Time
 }
+
+
+const BroDateTimeFmt = "2006-01-02-03-04-05"
 
 func UnescapeFieldValue(givenValue string) (value string) {
 	// many zeek field values in the header will be hex encoded
@@ -97,7 +99,6 @@ func parseZeekLogHeader(givenFilename string) (logfileopts *LogFileOpts, err err
 				thisFieldName, thisFieldValue := zeekLogPullVar(thisLine, l.separator)
 
 				if len(thisFieldName) > 0 {
-					fmt.Println(thisFieldName, thisFieldValue)
 					switch thisFieldName {
 					case "set_separator":
 						l.setSeparator = UnescapeFieldValue(thisFieldValue)
@@ -107,22 +108,23 @@ func parseZeekLogHeader(givenFilename string) (logfileopts *LogFileOpts, err err
 						l.path = UnescapeFieldValue(thisFieldValue)
 					case "empty_field":
 						l.emptyField = UnescapeFieldValue(thisFieldValue)
+					case "open":
+						var dateParseErr error
+						l.open, dateParseErr = time.Parse(BroDateTimeFmt, thisFieldValue)
+						if dateParseErr != nil {
+							err = errors.New("date not parsed for open field")
+						}
 					}
 				}
 			}
 
-			//if !strings.HasPrefix(thisLine, "#") {
-			//	fmt.Println(thisLine) // these are proper lines
-			//}
-
 		} else {
-			// pull prefix
+			// pull separator here to read the other vars from the header
 			if strings.HasPrefix(thisLine, "#separator") {
 				l.separator = zeekLogLineToSeparator(thisLine)
 			}
 		}
 	}
 
-	fmt.Println("done")
 	return &l, err
 }

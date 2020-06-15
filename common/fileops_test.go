@@ -15,7 +15,11 @@ func TestParseZeekLogHeader(t *testing.T) {
 	data, err := parseZeekLogHeader(broLogFn)
 
 	if err != nil {
-		t.Errorf("error opening a regular log file!")
+		t.Errorf("Error opening a regular log file! Error thrown was: %s", err)
+	}
+
+	if data.open.Year() == 0001 {
+		t.Errorf("date wasnt parsed out of open")
 	}
 
 	setSetShouldBe := ","
