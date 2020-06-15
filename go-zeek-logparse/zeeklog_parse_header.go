@@ -9,6 +9,7 @@ import (
 	"time"
 )
 
+// LogFileOpts stores vars in the header of the zeek log
 type LogFileOpts struct {
 	separator    string
 	setSeparator string
@@ -17,9 +18,10 @@ type LogFileOpts struct {
 	path         string
 	open         time.Time
 	fieldMapping map[string]string
-} // these are the normally included vars in the header
+}
 
-const ZeekDateTimeFmt = "2006-01-02-15-04-05"	// common format for zeek header datetimes
+// ZeekDateTimeFmt is the common format for zeek header datetimes
+const ZeekDateTimeFmt = "2006-01-02-15-04-05"
 
 // many zeek field values in the header will be hex encoded
 // ie: tab char = \x09 convert these to real chars
