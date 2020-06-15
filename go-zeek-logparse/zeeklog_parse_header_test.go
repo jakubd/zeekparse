@@ -2,6 +2,7 @@ package zeekparse
 
 import (
 	"github.com/stretchr/testify/assert"
+	"os"
 	"testing"
 )
 
@@ -36,6 +37,49 @@ func zeekHeaderDateFieldParseFail(t *testing.T) {
 	broLogFn := "test_input/bad_dates_header.log"
 	_, err := parseZeekLogHeader(broLogFn)
 	assert.EqualError(t, err, "date not parsed for open field")
+}
+
+func testIsFileGzippedGoodCase(t *testing.T) {
+	f, err := os.Open("test_input/just_gz_header.gz")
+	if f != nil {
+		defer f.Close()
+	}
+	assert.NoError(t, err)
+	res, thisErr := isThisFHndGzipped(f)
+	assert.NoError(t, thisErr)
+	assert.True(t, res)
+}
+
+func testIsFileGzippedTextCase(t *testing.T) {
+	f, err := os.Open("test_input/proper_header.log")
+	if f != nil {
+		defer f.Close()
+	}
+	assert.NoError(t, err)
+	res, thisErr := isThisFHndGzipped(f)
+	assert.NoError(t, thisErr)
+	assert.False(t, res)
+}
+
+func testImproperGzippedTextCase(t *testing.T) {
+	f, err := os.Open("test_input/improper_gz_header.gz")
+	if f != nil {
+		defer f.Close()
+	}
+	assert.NoError(t, err)
+	_, thisErr := isThisFHndGzipped(f)
+	assert.Error(t, thisErr)
+}
+
+func TestIsThisFHndGzipped(t *testing.T) {
+	// test a case where we have a gzipped file
+	testIsFileGzippedGoodCase(t)
+
+	// test a case where we have a text file
+	testIsFileGzippedTextCase(t)
+
+	// test on an improper gz header as well
+	testImproperGzippedTextCase(t)
 }
 
 func TestParseZeekLogHeader(t *testing.T) {

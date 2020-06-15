@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"encoding/hex"
 	"errors"
+	"io"
 	"os"
 	"strings"
 	"time"
@@ -49,7 +50,6 @@ func zeekLogLineToSeparator(givenLine string) (separator string) {
 		return
 	}
 
-	//separatorLineSplit := strings.Split(givenLine, " ")
 	field, val := zeekLogPullVar(givenLine, " ")
 
 	if field == "separator" {
@@ -74,6 +74,23 @@ func zeekLogPullVar(givenLine, givenSeparator string) (fieldName, fieldValue str
 		fieldValue = varSplit[1]
 	}
 
+	return
+}
+
+// determines if the given file handler is gzipped or not
+func isThisFHndGzipped(givenFileHandler *os.File) (isGzipped bool, err error) {
+	var magicByteBuffer [2]byte
+	isGzipped = false
+
+	_, thisErr := io.ReadFull(givenFileHandler, magicByteBuffer[:])
+	if thisErr != nil {
+		err = thisErr
+	}
+
+	// gzipped streams start with magic bytes 0x1f 0x8b
+	if magicByteBuffer[0] == '\x1f' && magicByteBuffer[1] == '\x8b' {
+		isGzipped = true
+	}
 	return
 }
 
