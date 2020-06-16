@@ -1,0 +1,11 @@
+#separator \x09
+#set_separator	,
+#empty_field	(empty)
+#unset_field	-
+#path	dns
+#open	2020-06-15-20-00-06
+#fields	ts	uid	id.orig_h	id.orig_p	id.resp_h	id.resp_p	proto	trans_id	rtt	query	qclass	qclass_name	qtype	qtype_name	rcode	rcode_name	AA	TC	RD	RA	Z	answers	TTLs	rejected
+#types	time	string	addr	port	addr	port	enum	count	interval	string	count	string	count	string	count	string	bool	bool	bool	bool	count	vector[string]	vector[interval]	bool
+1592266854.705260	CUOox1zDjsnvXHVj8	192.168.1.104	50276	192.168.1.1	53	udp	40982	-	clientservices.googleapis.com	-	-	-	-	0	NOERROR	F	F	F	T	0	172.217.165.3	68.000000	F
+1592266861.057199	C323Uu4wyZSqosW2mi	192.168.1.104	56596	192.168.1.1	53	udp	25629	-	docs.google.com	-	-	-	-	0	NOERROR	F	F	F	T	0	172.217.0.238	7.000000	F
+1592266861.065202	CPYNnf8upOybXTi39	192.168.1.104	35871	192.168.1.1	53	udp	38005	-	ssl.gstatic.com	-	-	-	-	0	NOERROR	F	F	F	T	0	172.217.164.227	234.000000	F

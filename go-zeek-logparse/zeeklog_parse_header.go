@@ -5,6 +5,7 @@ import (
 	"compress/gzip"
 	"encoding/hex"
 	"errors"
+	log "github.com/sirupsen/logrus"
 	"io"
 	"os"
 	"strings"
@@ -204,7 +205,7 @@ func scanZeekHeader(givenScanner *bufio.Scanner, logopts *LogFileOpts) (err erro
 
 // parses the header of zeek log files and returns options as the LogFileOpts struct
 func parseZeekLogHeader(givenFilename string) (logfileopts *LogFileOpts, err error) {
-
+	log.Debug("parsing header from", givenFilename)
 	scanner, fHnd, gzipReader, fileSetupErr := setUpFileParse(givenFilename)
 
 	if fHnd != nil {
@@ -227,5 +228,6 @@ func parseZeekLogHeader(givenFilename string) (logfileopts *LogFileOpts, err err
 		return
 	}
 
+	log.Debug("parsed this from header:", l)
 	return &l, err
 }
