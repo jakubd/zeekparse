@@ -16,14 +16,14 @@ import (
 	"strings"
 )
 
-// a generic zeek log field without casts
+// ZeekLogField is a generic zeek log field without casts
 type ZeekLogField struct {
 	fieldName string
 	fieldType string
 	value     string
 }
 
-// a zeek log entry is a slice of fields referring to a single row in a log
+// ZeekLogEntry is a slice of fields referring to a single row in a log
 type ZeekLogEntry []ZeekLogField
 
 func parseZeekLog(givenFilename string) (allResults []ZeekLogEntry, err error) {
