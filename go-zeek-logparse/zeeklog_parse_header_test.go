@@ -17,7 +17,7 @@ func zeekHeaderGoodCase(t *testing.T, givenFilename string) {
 	assert.Equal(t, data.path, "dns")
 	assert.Equal(t, data.emptyField, "(empty)")
 	assert.Equal(t, data.unsetField, "-")
-	assert.True(t, len(data.fieldMapping) > 0)
+	assert.True(t, len(data.fieldTypeMap) > 0)
 }
 
 func zeekHeaderFileDoesntExist(t *testing.T) {

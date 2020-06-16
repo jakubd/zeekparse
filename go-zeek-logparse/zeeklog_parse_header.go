@@ -20,7 +20,8 @@ type LogFileOpts struct {
 	unsetField   string
 	path         string
 	open         time.Time
-	fieldMapping map[string]string
+	fieldTypeMap map[string]string
+	fieldOrder   []string
 }
 
 // ZeekDateTimeFmt is the common format for zeek header datetimes
@@ -191,8 +192,9 @@ func scanZeekHeader(givenScanner *bufio.Scanner, logopts *LogFileOpts) (err erro
 			if len(splitTypes) == len(splitFields) {
 				for idx := range splitFields {
 					typeMap[splitFields[idx]] = splitTypes[idx]
+					logopts.fieldOrder = append(logopts.fieldOrder, splitFields[idx])
 				}
-				logopts.fieldMapping = typeMap
+				logopts.fieldTypeMap = typeMap
 			} else {
 				err = errors.New("mismatched header fields")
 			}
