@@ -1,8 +1,8 @@
 package zeekparse
 
 import (
+	"errors"
 	"fmt"
-	log "github.com/sirupsen/logrus"
 	"strings"
 )
 
@@ -27,12 +27,17 @@ func parseZeekLog(givenFilename string) (err error) {
 		err = headerParseErr
 		return
 	}
-	log.Debug(headerInfo)
+	// log.Debug(headerInfo)
 
 	for scanner.Scan() {
 		thisLine := scanner.Text()
 		if !strings.HasPrefix(thisLine, "#") {
-			log.Debug(thisLine)
+			thisLineSplit := strings.Split(thisLine, headerInfo.separator)
+			if len(thisLineSplit) != len(headerInfo.fieldMapping) {
+				err = errors.New("mismatch between line in log and field")
+				return
+			}
+			// log.Debug(thisLineSplit)
 		}
 	}
 
