@@ -6,6 +6,13 @@ import (
 	"testing"
 )
 
+func basicCheckofParse(t *testing.T, results []ZeekLogEntry, entryCountExpected, fieldCountExpected int) {
+	assert.True(t, len(results) == entryCountExpected)
+	for _, thisResult := range results {
+		assert.Equal(t, len(thisResult), fieldCountExpected)
+	}
+}
+
 func TestParseZeekLog(t *testing.T) {
 	log.SetLevel(log.InfoLevel)
 
@@ -14,17 +21,11 @@ func TestParseZeekLog(t *testing.T) {
 
 	// uncompressed case
 	uncompressedResults, uncompErr := parseZeekLog("test_input/simple_dns.log")
-	for _, thisResult := range uncompressedResults {
-		assert.Equal(t, len(thisResult), fieldsInLog)
-	}
-	assert.True(t, len(uncompressedResults) == numEntriesInLog)
+	basicCheckofParse(t, uncompressedResults, numEntriesInLog, fieldsInLog)
 	assert.NoError(t, uncompErr)
 
 	// compressed case
 	compressedResults, compErr := parseZeekLog("test_input/simple_dns.log.gz")
-	for _, thisResult := range compressedResults {
-		assert.Equal(t, len(thisResult), fieldsInLog)
-	}
-	assert.True(t, len(compressedResults) == numEntriesInLog)
+	basicCheckofParse(t, compressedResults, numEntriesInLog, fieldsInLog)
 	assert.NoError(t, compErr)
 }

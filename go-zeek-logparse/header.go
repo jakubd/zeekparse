@@ -1,3 +1,9 @@
+/*
+This file mostly parses the zeek log headers and puts it into a structure called
+LogFileOpts.  This structure is needed to properly parse the rest of the file
+as well as some meta data.
+*/
+
 package zeekparse
 
 import (

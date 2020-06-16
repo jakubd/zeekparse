@@ -1,3 +1,12 @@
+/*
+This file deals mostly with parsing the zeek log file into a low level
+generic representation (without any casts) that should work with any
+properly formatted zeek text log.
+
+The representation is a slice of ZeekLogEntry which itself is a slice of
+ZeekLogFields that have fieldNBame, fieldType and values all as strings.
+*/
+
 package zeekparse
 
 import (
