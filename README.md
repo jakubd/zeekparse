@@ -6,3 +6,14 @@
 
 A work-in-progress log parser for common zeek text logs.
 
+# Status of WIP
+
+* [X] handles gz compressed and uncompressed files
+* [X] Can parse values from headers.
+* [X] Can parse log entries into Go structures.
+* [ ] Can parse dns.log entries.
+* [ ] Can parse conn.log entries.
+* [ ] Can parse http.log entries.
+* [ ] Can parse ssl.log entries.
+* [ ] Can parse ssh.log entries.
+* [ ] Can parse dhcp.log entries. 
