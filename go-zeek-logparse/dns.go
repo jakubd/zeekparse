@@ -48,7 +48,7 @@ const (
 	UDP Proto = "UDP"
 )
 
-type DNSField struct {
+type DNSEntry struct {
 	ts         time.Time
 	uid        string
 	idOrigH    string
@@ -75,7 +75,7 @@ type DNSField struct {
 	rejected   bool
 }
 
-func thisLogEntryToDNSStruct(givenZeekLogEntry ZeekLogEntry) (DNSEntry DNSField, err error) {
+func thisLogEntryToDNSStruct(givenZeekLogEntry ZeekLogEntry) (DNSEntry DNSEntry, err error) {
 	for _, thisField := range givenZeekLogEntry {
 		switch thisField.fieldName {
 		case "uid":
@@ -116,6 +116,51 @@ func thisLogEntryToDNSStruct(givenZeekLogEntry ZeekLogEntry) (DNSEntry DNSField,
 					return
 				}
 			}
+		case "query":
+			DNSEntry.query = thisField.value
+		case "qclass":
+			if thisField.value == "-" {
+				DNSEntry.qclass = -1
+			} else {
+				DNSEntry.qclass, err = strconv.Atoi(thisField.value)
+				if err != nil {
+					return
+				}
+			}
+		case "qclass_name":
+			DNSEntry.qclassName = thisField.value
+		case "qtype":
+			if thisField.value == "-" {
+				DNSEntry.qtype = -1
+			} else {
+				DNSEntry.qtype, err = strconv.Atoi(thisField.value)
+				if err != nil {
+					return
+				}
+			}
+		case "qtype_name":
+			DNSEntry.qtypeName = thisField.value
+		case "rcode":
+			if thisField.value == "-" {
+				DNSEntry.rcode = -1
+			} else {
+				DNSEntry.rcode, err = strconv.Atoi(thisField.value)
+				if err != nil {
+					return
+				}
+			}
+		case "rcode_name":
+			DNSEntry.rcodeName = thisField.value
+		case "AA":
+			DNSEntry.AA = thisField.value == "T"
+		case "TC":
+			DNSEntry.TC = thisField.value == "T"
+		case "RD":
+			DNSEntry.RD = thisField.value == "T"
+		case "RA":
+			DNSEntry.RA = thisField.value == "T"
+		case "rejected":
+			DNSEntry.rejected = thisField.value == "T"
 		default:
 			log.Infof("unimplmented field: %s", thisField.fieldName)
 		}
