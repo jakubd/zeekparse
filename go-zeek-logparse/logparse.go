@@ -11,7 +11,6 @@ package zeekparse
 
 import (
 	"errors"
-	"fmt"
 	log "github.com/sirupsen/logrus"
 	"strings"
 )
@@ -27,7 +26,6 @@ type ZeekLogField struct {
 type ZeekLogEntry []ZeekLogField
 
 func parseZeekLog(givenFilename string) (allResults []ZeekLogEntry, header *LogFileOpts, err error) {
-	fmt.Println(givenFilename)
 	scanner, fHnd, gzipReader, fileSetupErr := setUpFileParse(givenFilename)
 
 	if fHnd != nil {

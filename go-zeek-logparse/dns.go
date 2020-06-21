@@ -228,7 +228,7 @@ func thisLogEntryToDNSStruct(givenZeekLogEntry ZeekLogEntry, givenHeader *LogFil
 				DNSEntry.TTLs = append(DNSEntry.TTLs, thisFloat)
 			}
 		default:
-			log.Infof("unimplmented field: %s", thisField.fieldName)
+			log.Infof("unimplemented field: %s", thisField.fieldName)
 		}
 	}
 	return
