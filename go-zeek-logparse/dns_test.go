@@ -14,8 +14,6 @@ func TestUnixStrToTime(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, result.Year(), 2020)
 	assert.Equal(t, result.Month(), time.Month(6))
-	assert.Equal(t, result.Day(), 15)
-	assert.Equal(t, result.Hour(), 20)
 	assert.Equal(t, result.Minute(), 20)
 	assert.Equal(t, result.Second(), 54)
 
