@@ -7,6 +7,7 @@ package zeekparse
 
 import (
 	"errors"
+	"fmt"
 	log "github.com/sirupsen/logrus"
 	"strconv"
 	"strings"
@@ -80,6 +81,17 @@ type DNSEntry struct {
 	answers    []string
 	TTLs       []float64
 	rejected   bool
+}
+
+// Print will just print the DNS query and response to the screen and include the server client info.
+func (thisEntry *DNSEntry) Print() {
+	fmt.Printf("client {%s:%d} asks server {%s:%d}:\n", thisEntry.idOrigH, thisEntry.idOrigP, thisEntry.idRespH, thisEntry.idRespP)
+	fmt.Printf("\t%s -> %s\n", thisEntry.query, thisEntry.answers)
+}
+
+// ShortPrint will just print the DNS query and response as a one liner
+func (thisEntry *DNSEntry) ShortPrint() {
+	fmt.Printf("\t%s -> %s\n", thisEntry.query, thisEntry.answers)
 }
 
 func unixStrToTime(givenUnixStr string) (resultTime time.Time, err error) {

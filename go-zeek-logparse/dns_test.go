@@ -1,9 +1,9 @@
 package zeekparse
 
 import (
-	"fmt"
 	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
+	"net"
 	"testing"
 	"time"
 )
@@ -30,6 +30,12 @@ func TestUnixStrToTime(t *testing.T) {
 	assert.Error(t, err)
 }
 
+func BasicTestZeekParse(t *testing.T, givenEntry DNSEntry) {
+	assert.True(t, len(givenEntry.uid) >= 15 && len(givenEntry.uid) <= 18)
+	assert.True(t, net.ParseIP(givenEntry.idOrigH) != nil && net.ParseIP(givenEntry.idRespH) != nil)
+	assert.True(t, givenEntry.idOrigP > 1 && givenEntry.idOrigP < 65539)
+}
+
 func TestThisLogEntryToDNSStruct(t *testing.T) {
 	log.SetFormatter(&log.TextFormatter{ForceColors: true})
 	log.SetLevel(log.InfoLevel)
@@ -39,17 +45,35 @@ func TestThisLogEntryToDNSStruct(t *testing.T) {
 	for _, thisResult := range compressedResults {
 		dnsRes, dnsErr := thisLogEntryToDNSStruct(thisResult, header)
 		assert.NoError(t, dnsErr)
-		assert.True(t, len(dnsRes.uid) >= 17 && len(dnsRes.uid) <= 18)
+		BasicTestZeekParse(t, dnsRes)
 	}
 	assert.NoError(t, compErr)
 }
 
 func TestParseDNSLog(t *testing.T) {
-	allRes, err := parseDNSLog("test_input/simple_dns.log.gz")
+	_, err := parseDNSLog("test_input/simple_dns.log.gz")
 	assert.NoError(t, err)
-	fmt.Println(allRes)
 }
 
+//// just a quick demo of parsing dns for some use
+//// not actually "testing" anything
 //func TestLocal(t *testing.T) {
-//	parseDNSLog("/usr/local/zeek/logs/2019-11-04/dns.00:00:00-01:00:00.log.gz")
+//	allRes, err := parseDNSLog("/usr/local/zeek/logs/2019-11-04/dns.00:00:00-01:00:00.log.gz")
+//	assert.NoError(t, err)
+//	for _, thisResult := range allRes {
+//		BasicTestZeekParse(t, thisResult)
+//		if len(thisResult.answers) > 0 {
+//			for _, thisAnswer := range thisResult.answers {
+//				if len(thisAnswer) > 0 {
+//					if thisResult.idRespH == "192.168.1.1" && !(strings.Contains(thisResult.query, "in-addr.arpa")) {
+//						fmt.Println()
+//						thisResult.Print()
+//						fmt.Println()
+//					} else {
+//						thisResult.ShortPrint()
+//					}
+//				}
+//			}
+//		}
+//	}
 //}
