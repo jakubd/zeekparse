@@ -51,6 +51,9 @@ const (
 	UDP Proto = "UDP"
 )
 
+// ZeekNilValue is how null values are expressed in zeek logs, default is "-"
+const ZeekNilValue = "-"
+
 // DNSEntry is a fully parsed dns.log line.
 type DNSEntry struct {
 	ts         time.Time
@@ -139,7 +142,7 @@ func thisLogEntryToDNSStruct(givenZeekLogEntry ZeekLogEntry) (DNSEntry DNSEntry,
 				return
 			}
 		case "rtt":
-			if thisField.value == "-" {
+			if thisField.value == ZeekNilValue {
 				DNSEntry.rtt = -1
 			} else {
 				DNSEntry.rtt, err = strconv.Atoi(thisField.value)
@@ -150,7 +153,7 @@ func thisLogEntryToDNSStruct(givenZeekLogEntry ZeekLogEntry) (DNSEntry DNSEntry,
 		case "query":
 			DNSEntry.query = thisField.value
 		case "qclass":
-			if thisField.value == "-" {
+			if thisField.value == ZeekNilValue {
 				DNSEntry.qclass = -1
 			} else {
 				DNSEntry.qclass, err = strconv.Atoi(thisField.value)
@@ -161,7 +164,7 @@ func thisLogEntryToDNSStruct(givenZeekLogEntry ZeekLogEntry) (DNSEntry DNSEntry,
 		case "qclass_name":
 			DNSEntry.qclassName = thisField.value
 		case "qtype":
-			if thisField.value == "-" {
+			if thisField.value == ZeekNilValue {
 				DNSEntry.qtype = -1
 			} else {
 				DNSEntry.qtype, err = strconv.Atoi(thisField.value)
@@ -172,7 +175,7 @@ func thisLogEntryToDNSStruct(givenZeekLogEntry ZeekLogEntry) (DNSEntry DNSEntry,
 		case "qtype_name":
 			DNSEntry.qtypeName = thisField.value
 		case "rcode":
-			if thisField.value == "-" {
+			if thisField.value == ZeekNilValue {
 				DNSEntry.rcode = -1
 			} else {
 				DNSEntry.rcode, err = strconv.Atoi(thisField.value)
@@ -193,7 +196,7 @@ func thisLogEntryToDNSStruct(givenZeekLogEntry ZeekLogEntry) (DNSEntry DNSEntry,
 		case "rejected":
 			DNSEntry.rejected = thisField.value == "T"
 		case "Z":
-			if thisField.value == "-" {
+			if thisField.value == ZeekNilValue {
 				DNSEntry.Z = -1
 			} else {
 				DNSEntry.Z, err = strconv.Atoi(thisField.value)
