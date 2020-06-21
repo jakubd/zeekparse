@@ -9,6 +9,8 @@ import (
 	"errors"
 	"fmt"
 	log "github.com/sirupsen/logrus"
+	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
@@ -85,7 +87,9 @@ type DNSEntry struct {
 
 // Print will just print the DNS query and response to the screen and include the server client info.
 func (thisEntry *DNSEntry) Print() {
-	fmt.Printf("client {%s:%d} asks server {%s:%d}:\n", thisEntry.idOrigH, thisEntry.idOrigP, thisEntry.idRespH, thisEntry.idRespP)
+	fmt.Printf("(%s-%d-%d  %d:%d) client {%s:%d} asks server {%s:%d}:\n", thisEntry.ts.Month().String(),
+		thisEntry.ts.Day(), thisEntry.ts.Year(), thisEntry.ts.Hour(), thisEntry.ts.Minute(),
+		thisEntry.idOrigH, thisEntry.idOrigP, thisEntry.idRespH, thisEntry.idRespP)
 	fmt.Printf("\t%s -> %s\n", thisEntry.query, thisEntry.answers)
 }
 
@@ -265,5 +269,40 @@ func parseDNSLog(givenFilename string) (parsedResults []DNSEntry, err error) {
 		}
 		parsedResults = append(parsedResults, dnsRes)
 	}
+	return
+}
+
+func parseDnsRecurse(givenDirectory string) (allResults []DNSEntry, err error) {
+	var filenames []string
+
+	err = filepath.Walk(givenDirectory,
+		func(path string, info os.FileInfo, err error) error {
+			if err != nil {
+				return err
+			}
+			if strings.Contains(path, "dns.") {
+				filenames = append(filenames, path)
+			}
+			return nil
+		})
+
+	for _, thisFile := range filenames {
+		print(thisFile)
+		thisResult, parseErr := parseDNSLog(thisFile)
+		if parseErr != nil {
+			err = parseErr
+			return
+		}
+
+		// TODO: this seems silly and is slow
+		for _, thisAppend := range thisResult {
+			allResults = append(allResults, thisAppend)
+		}
+	}
+
+	if err != nil {
+		return
+	}
+
 	return
 }
