@@ -6,8 +6,10 @@ and generates type cast structures specifically for dns.log parsing.
 package zeekparse
 
 import (
+	"errors"
 	log "github.com/sirupsen/logrus"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -41,6 +43,7 @@ import (
 // TTLs:vector[interval] - vector of TTL of the responses lifespan in cache
 // rejected:bool - rejected by server?
 
+// Proto is an enum of tcp protocol, either TCP or UDP
 type Proto string
 
 const (
@@ -48,6 +51,7 @@ const (
 	UDP Proto = "UDP"
 )
 
+// DNSEntry is a fully parsed dns.log line.
 type DNSEntry struct {
 	ts         time.Time
 	uid        string
@@ -75,9 +79,36 @@ type DNSEntry struct {
 	rejected   bool
 }
 
+func unixStrToTime(givenUnixStr string) (resultTime time.Time, err error) {
+	var splitUnixTime []string
+	splitUnixTime = strings.Split(givenUnixStr, ".")
+	if len(splitUnixTime) != 2 {
+		err = errors.New("incorrect input unixtime value")
+		return
+	}
+
+	var intSec, intNSec int64
+	intSec, err = strconv.ParseInt(splitUnixTime[0], 10, 64)
+	if err != nil {
+		return
+	}
+
+	intNSec, err = strconv.ParseInt(splitUnixTime[1], 10, 64)
+	if err != nil {
+		return
+	}
+	resultTime = time.Unix(intSec, intNSec)
+	return
+}
+
 func thisLogEntryToDNSStruct(givenZeekLogEntry ZeekLogEntry) (DNSEntry DNSEntry, err error) {
 	for _, thisField := range givenZeekLogEntry {
 		switch thisField.fieldName {
+		case "ts":
+			DNSEntry.ts, err = unixStrToTime(thisField.value)
+			if err != nil {
+				return
+			}
 		case "uid":
 			DNSEntry.uid = thisField.value
 		case "id.orig_h":
@@ -161,6 +192,15 @@ func thisLogEntryToDNSStruct(givenZeekLogEntry ZeekLogEntry) (DNSEntry DNSEntry,
 			DNSEntry.RA = thisField.value == "T"
 		case "rejected":
 			DNSEntry.rejected = thisField.value == "T"
+		case "Z":
+			if thisField.value == "-" {
+				DNSEntry.Z = -1
+			} else {
+				DNSEntry.Z, err = strconv.Atoi(thisField.value)
+				if err != nil {
+					return
+				}
+			}
 		default:
 			log.Infof("unimplmented field: %s", thisField.fieldName)
 		}
