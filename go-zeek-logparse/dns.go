@@ -87,9 +87,8 @@ type DNSEntry struct {
 
 // Print will just print the DNS query and response to the screen and include the server client info.
 func (thisEntry *DNSEntry) Print() {
-	fmt.Printf("(%s-%d-%d  %d:%d) client {%s:%d} asks server {%s:%d}:\n", thisEntry.ts.Month().String(),
-		thisEntry.ts.Day(), thisEntry.ts.Year(), thisEntry.ts.Hour(), thisEntry.ts.Minute(),
-		thisEntry.idOrigH, thisEntry.idOrigP, thisEntry.idRespH, thisEntry.idRespP)
+	fmt.Printf("(%s) client {%s:%d} asks server {%s:%d}:\n",
+		thisEntry.ts.String(), thisEntry.idOrigH, thisEntry.idOrigP, thisEntry.idRespH, thisEntry.idRespP)
 	fmt.Printf("\t%s -> %s\n", thisEntry.query, thisEntry.answers)
 }
 
