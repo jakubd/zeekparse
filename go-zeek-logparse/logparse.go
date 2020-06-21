@@ -26,7 +26,7 @@ type ZeekLogField struct {
 // ZeekLogEntry is a slice of fields referring to a single row in a log
 type ZeekLogEntry []ZeekLogField
 
-func parseZeekLog(givenFilename string) (allResults []ZeekLogEntry, err error) {
+func parseZeekLog(givenFilename string) (allResults []ZeekLogEntry, header *LogFileOpts, err error) {
 	fmt.Println(givenFilename)
 	scanner, fHnd, gzipReader, fileSetupErr := setUpFileParse(givenFilename)
 
@@ -43,6 +43,7 @@ func parseZeekLog(givenFilename string) (allResults []ZeekLogEntry, err error) {
 	}
 
 	headerInfo, headerParseErr := parseZeekLogHeader(givenFilename)
+	header = headerInfo
 	if headerParseErr != nil {
 		err = headerParseErr
 		return

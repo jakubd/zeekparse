@@ -35,10 +35,10 @@ func TestDNSParse(t *testing.T) {
 	log.SetLevel(log.InfoLevel)
 
 	// compressed case
-	compressedResults, compErr := parseZeekLog("test_input/simple_dns.log.gz")
+	compressedResults, header, compErr := parseZeekLog("test_input/simple_dns.log.gz")
 	for _, thisResult := range compressedResults {
 		fmt.Println(thisResult)
-		dnsRes, dnsErr := thisLogEntryToDNSStruct(thisResult)
+		dnsRes, dnsErr := thisLogEntryToDNSStruct(thisResult, header)
 		assert.NoError(t, dnsErr)
 		fmt.Println(dnsRes)
 		assert.True(t, len(dnsRes.uid) >= 17 && len(dnsRes.uid) <= 18)

@@ -20,12 +20,13 @@ func TestParseZeekLog(t *testing.T) {
 	const fieldsInLog = 24
 
 	// uncompressed case
-	uncompressedResults, uncompErr := parseZeekLog("test_input/simple_dns.log")
+	uncompressedResults, header, uncompErr := parseZeekLog("test_input/simple_dns.log")
 	basicCheckofParse(t, uncompressedResults, numEntriesInLog, fieldsInLog)
+	assert.True(t, len(header.setSeparator) > 0)
 	assert.NoError(t, uncompErr)
 
 	// compressed case
-	compressedResults, compErr := parseZeekLog("test_input/simple_dns.log.gz")
+	compressedResults, _, compErr := parseZeekLog("test_input/simple_dns.log.gz")
 	basicCheckofParse(t, compressedResults, numEntriesInLog, fieldsInLog)
 	assert.NoError(t, compErr)
 }

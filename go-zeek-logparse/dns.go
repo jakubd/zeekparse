@@ -78,7 +78,7 @@ type DNSEntry struct {
 	RA         bool
 	Z          int
 	answers    []string
-	TTLs       []int
+	TTLs       []float64
 	rejected   bool
 }
 
@@ -104,7 +104,13 @@ func unixStrToTime(givenUnixStr string) (resultTime time.Time, err error) {
 	return
 }
 
-func thisLogEntryToDNSStruct(givenZeekLogEntry ZeekLogEntry) (DNSEntry DNSEntry, err error) {
+func thisLogEntryToDNSStruct(givenZeekLogEntry ZeekLogEntry, givenHeader *LogFileOpts) (DNSEntry DNSEntry, err error) {
+
+	if len(givenHeader.setSeparator) == 0 {
+		err = errors.New("no set seperator in header can't parse")
+		return
+	}
+
 	for _, thisField := range givenZeekLogEntry {
 		switch thisField.fieldName {
 		case "ts":
@@ -204,14 +210,26 @@ func thisLogEntryToDNSStruct(givenZeekLogEntry ZeekLogEntry) (DNSEntry DNSEntry,
 					return
 				}
 			}
+		case "answers":
+			if thisField.value == ZeekNilValue {
+				DNSEntry.answers = append(DNSEntry.answers, "")
+			} else {
+				splitSlice := strings.Split(thisField.value, givenHeader.setSeparator)
+				DNSEntry.answers = splitSlice
+			}
+		case "TTLs":
+			splitSlice := strings.Split(thisField.value, givenHeader.setSeparator)
+			for _, thisEntry := range splitSlice {
+				var thisFloat float64
+				thisFloat, err = strconv.ParseFloat(thisEntry, 64)
+				if err != nil {
+					return
+				}
+				DNSEntry.TTLs = append(DNSEntry.TTLs, thisFloat)
+			}
 		default:
 			log.Infof("unimplmented field: %s", thisField.fieldName)
 		}
 	}
 	return
 }
-
-// NOTE: bin this for now i don't think i can do this with mixed types
-//func thisFieldToDNSStruct(givenZeekLogField ZeekLogField) (err error) {
-//	return
-//}
