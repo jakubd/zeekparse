@@ -1,11 +1,9 @@
 package zeekparse
 
 import (
-	"fmt"
 	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 	"net"
-	"strings"
 	"testing"
 	"time"
 )
@@ -81,23 +79,23 @@ func TestParseDNSLog(t *testing.T) {
 //	}
 //}
 //
-func TestLocal2(t *testing.T) {
-	allRes, err := parseDnsRecurse("/usr/local/zeek/logs/2020-06-18/")
-	assert.NoError(t, err)
-	for _, thisResult := range allRes {
-		BasicTestZeekParse(t, thisResult)
-		if len(thisResult.answers) > 0 {
-			for _, thisAnswer := range thisResult.answers {
-				if len(thisAnswer) > 0 {
-					if thisResult.idRespH == "192.168.1.1" && !(strings.Contains(thisResult.query, "in-addr.arpa")) {
-						fmt.Println()
-						thisResult.Print()
-						fmt.Println()
-					} else {
-						//thisResult.ShortPrint()
-					}
-				}
-			}
-		}
-	}
-}
+//func TestLocal2(t *testing.T) {
+//	allRes, err := parseDnsRecurse("/usr/local/zeek/logs/2020-06-18/")
+//	assert.NoError(t, err)
+//	for _, thisResult := range allRes {
+//		BasicTestZeekParse(t, thisResult)
+//		if len(thisResult.answers) > 0 {
+//			for _, thisAnswer := range thisResult.answers {
+//				if len(thisAnswer) > 0 {
+//					if thisResult.idRespH == "192.168.1.1" && !(strings.Contains(thisResult.query, "in-addr.arpa")) {
+//						fmt.Println()
+//						thisResult.Print()
+//						fmt.Println()
+//					} else {
+//						//thisResult.ShortPrint()
+//					}
+//				}
+//			}
+//		}
+//	}
+//}
