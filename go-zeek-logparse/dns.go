@@ -64,7 +64,7 @@ type DNSEntry struct {
 	idRespP    int
 	proto      Proto
 	transId    int
-	rtt        int
+	rtt        float64
 	query      string
 	qclass     int
 	qclassName string
@@ -151,7 +151,7 @@ func thisLogEntryToDNSStruct(givenZeekLogEntry ZeekLogEntry, givenHeader *LogFil
 			if thisField.value == ZeekNilValue {
 				DNSEntry.rtt = -1
 			} else {
-				DNSEntry.rtt, err = strconv.Atoi(thisField.value)
+				DNSEntry.rtt, err = strconv.ParseFloat(thisField.value, 64)
 				if err != nil {
 					return
 				}
@@ -218,14 +218,18 @@ func thisLogEntryToDNSStruct(givenZeekLogEntry ZeekLogEntry, givenHeader *LogFil
 				DNSEntry.answers = splitSlice
 			}
 		case "TTLs":
-			splitSlice := strings.Split(thisField.value, givenHeader.setSeparator)
-			for _, thisEntry := range splitSlice {
-				var thisFloat float64
-				thisFloat, err = strconv.ParseFloat(thisEntry, 64)
-				if err != nil {
-					return
+			if thisField.value == ZeekNilValue {
+				DNSEntry.TTLs = append(DNSEntry.TTLs, -1)
+			} else {
+				splitSlice := strings.Split(thisField.value, givenHeader.setSeparator)
+				for _, thisEntry := range splitSlice {
+					var thisFloat float64
+					thisFloat, err = strconv.ParseFloat(thisEntry, 64)
+					if err != nil {
+						return
+					}
+					DNSEntry.TTLs = append(DNSEntry.TTLs, thisFloat)
 				}
-				DNSEntry.TTLs = append(DNSEntry.TTLs, thisFloat)
 			}
 		default:
 			log.Infof("unimplemented field: %s", thisField.fieldName)
@@ -244,6 +248,7 @@ func parseDNSLog(givenFilename string) (parsedResults []DNSEntry, err error) {
 		var dnsRes DNSEntry
 		dnsRes, err = thisLogEntryToDNSStruct(thisResult, header)
 		if err != nil {
+			log.Error(err)
 			return
 		}
 		parsedResults = append(parsedResults, dnsRes)

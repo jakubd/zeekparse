@@ -49,3 +49,7 @@ func TestParseDNSLog(t *testing.T) {
 	assert.NoError(t, err)
 	fmt.Println(allRes)
 }
+
+//func TestLocal(t *testing.T) {
+//	parseDNSLog("/usr/local/zeek/logs/2019-11-04/dns.00:00:00-01:00:00.log.gz")
+//}
