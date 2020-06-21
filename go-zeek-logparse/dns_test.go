@@ -1,6 +1,7 @@
 package zeekparse
 
 import (
+	"fmt"
 	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -29,7 +30,7 @@ func TestUnixStrToTime(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestDNSParse(t *testing.T) {
+func TestThisLogEntryToDNSStruct(t *testing.T) {
 	log.SetFormatter(&log.TextFormatter{ForceColors: true})
 	log.SetLevel(log.InfoLevel)
 
@@ -41,4 +42,10 @@ func TestDNSParse(t *testing.T) {
 		assert.True(t, len(dnsRes.uid) >= 17 && len(dnsRes.uid) <= 18)
 	}
 	assert.NoError(t, compErr)
+}
+
+func TestParseDNSLog(t *testing.T) {
+	allRes, err := parseDNSLog("test_input/simple_dns.log.gz")
+	assert.NoError(t, err)
+	fmt.Println(allRes)
 }

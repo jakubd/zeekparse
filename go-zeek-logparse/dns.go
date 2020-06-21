@@ -233,3 +233,20 @@ func thisLogEntryToDNSStruct(givenZeekLogEntry ZeekLogEntry, givenHeader *LogFil
 	}
 	return
 }
+
+func parseDNSLog(givenFilename string) (parsedResults []DNSEntry, err error) {
+	allUnparsedEntries, header, initialParseErr := parseZeekLog(givenFilename)
+	if initialParseErr != nil {
+		err = initialParseErr
+		return
+	}
+	for _, thisResult := range allUnparsedEntries {
+		var dnsRes DNSEntry
+		dnsRes, err = thisLogEntryToDNSStruct(thisResult, header)
+		if err != nil {
+			return
+		}
+		parsedResults = append(parsedResults, dnsRes)
+	}
+	return
+}
