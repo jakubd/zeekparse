@@ -21,30 +21,30 @@ import (
 // defined here: https://docs.zeek.org/en/current/scripts/base/protocols/dns/main.zeek.html#type-DNS::Info
 // description of common DNS fields: https://www.zytrax.com/books/dns/ch15/
 // ------------
-// ts:time - timestamp
-// uid:string - unique id
+// TS:time - timestamp
+// Uid:string - unique id
 // id_orig_h:addr - senders address
 // id_orig_p:addr - senders port
 // id_resp_h:port - responders address
 // id_resp_p:port - responders port
-// proto:enum - protocol
-// trans_id:count - identifier assigned by the program that generated the query.
-// rtt:int - round trip time for query + resp
-// query:string  - the query
-// qclass:count - QCLASS field in the question section
+// Proto:enum - protocol
+// trans_id:count - identifier assigned by the program that generated the Query.
+// RTT:int - round trip time for Query + resp
+// Query:string  - the Query
+// QClass:count - QCLASS field in the question section
 // qclass_name:string - descriptive name of the QCLASS
-// qtype:count - type of record being requested (value)
+// QType:count - type of record being requested (value)
 // qtype_name:string - rtype of record being requested (descriptive string)
-// rcode:count - response being returned (value)
+// RCode:count - response being returned (value)
 // rcode_name:string - response being returned (descriptive string)
 // AA:bool - authorative response (set by responder)?
 // TC:bool - truncated response (set by responder?
 // RD:bool - recursion desired (by sender)?
 // RA:bool - recursion available (set by responder)
 // Z:count - reserved field (usually 0)
-// answers:vector[string] - all answers
+// Answers:vector[string] - all Answers
 // TTLs:vector[interval] - vector of TTL of the responses lifespan in cache
-// rejected:bool - rejected by server?
+// Rejected:bool - Rejected by server?
 
 // Proto is an enum of tcp protocol, either TCP or UDP
 type Proto string
@@ -59,42 +59,42 @@ const ZeekNilValue = "-"
 
 // DNSEntry is a fully parsed dns.log line.
 type DNSEntry struct {
-	ts         time.Time
-	uid        string
-	idOrigH    string
-	idOrigP    int
-	idRespH    string
-	idRespP    int
-	proto      Proto
-	transId    int
-	rtt        float64
-	query      string
-	qclass     int
-	qclassName string
-	qtype      int
-	qtypeName  string
-	rcode      int
-	rcodeName  string
+	TS         time.Time
+	Uid        string
+	IdOrigH    string
+	IdOrigP    int
+	IdRespH    string
+	IdRespP    int
+	Proto      Proto
+	TransId    int
+	RTT        float64
+	Query      string
+	QClass     int
+	QClassName string
+	QType      int
+	QTypeName  string
+	RCode      int
+	RCodeName  string
 	AA         bool
 	TC         bool
 	RD         bool
 	RA         bool
 	Z          int
-	answers    []string
+	Answers    []string
 	TTLs       []float64
-	rejected   bool
+	Rejected   bool
 }
 
-// Print will just print the DNS query and response to the screen and include the server client info.
+// Print will just print the DNS Query and response to the screen and include the server client info.
 func (thisEntry *DNSEntry) Print() {
 	fmt.Printf("(%s) client {%s:%d} asks server {%s:%d}:\n",
-		thisEntry.ts.String(), thisEntry.idOrigH, thisEntry.idOrigP, thisEntry.idRespH, thisEntry.idRespP)
-	fmt.Printf("\t%s -> %s\n", thisEntry.query, thisEntry.answers)
+		thisEntry.TS.String(), thisEntry.IdOrigH, thisEntry.IdOrigP, thisEntry.IdRespH, thisEntry.IdRespP)
+	fmt.Printf("\t%s -> %s\n", thisEntry.Query, thisEntry.Answers)
 }
 
-// ShortPrint will just print the DNS query and response as a one liner
+// ShortPrint will just print the DNS Query and response as a one liner
 func (thisEntry *DNSEntry) ShortPrint() {
-	fmt.Printf("\t%s -> %s\n", thisEntry.query, thisEntry.answers)
+	fmt.Printf("\t%s -> %s\n", thisEntry.Query, thisEntry.Answers)
 }
 
 func unixStrToTime(givenUnixStr string) (resultTime time.Time, err error) {
@@ -129,83 +129,83 @@ func thisLogEntryToDNSStruct(givenZeekLogEntry ZeekLogEntry, givenHeader *LogFil
 	for _, thisField := range givenZeekLogEntry {
 		switch thisField.fieldName {
 		case "ts":
-			DNSEntry.ts, err = unixStrToTime(thisField.value)
+			DNSEntry.TS, err = unixStrToTime(thisField.value)
 			if err != nil {
 				return
 			}
 		case "uid":
-			DNSEntry.uid = thisField.value
+			DNSEntry.Uid = thisField.value
 		case "id.orig_h":
-			DNSEntry.idOrigH = thisField.value
+			DNSEntry.IdOrigH = thisField.value
 		case "id.orig_p":
 			var convErr error
-			DNSEntry.idOrigP, convErr = strconv.Atoi(thisField.value)
+			DNSEntry.IdOrigP, convErr = strconv.Atoi(thisField.value)
 			if convErr != nil {
 				err = convErr
 				return
 			}
 		case "id.resp_h":
-			DNSEntry.idRespH = thisField.value
+			DNSEntry.IdRespH = thisField.value
 		case "id.resp_p":
-			DNSEntry.idRespP, err = strconv.Atoi(thisField.value)
+			DNSEntry.IdRespP, err = strconv.Atoi(thisField.value)
 			if err != nil {
 				return
 			}
 		case "proto":
 			if thisField.value == "udp" {
-				DNSEntry.proto = UDP
+				DNSEntry.Proto = UDP
 			} else if thisField.value == "tcp" {
-				DNSEntry.proto = TCP
+				DNSEntry.Proto = TCP
 			}
 		case "trans_id":
-			DNSEntry.transId, err = strconv.Atoi(thisField.value)
+			DNSEntry.TransId, err = strconv.Atoi(thisField.value)
 			if err != nil {
 				return
 			}
 		case "rtt":
 			if thisField.value == ZeekNilValue {
-				DNSEntry.rtt = -1
+				DNSEntry.RTT = -1
 			} else {
-				DNSEntry.rtt, err = strconv.ParseFloat(thisField.value, 64)
+				DNSEntry.RTT, err = strconv.ParseFloat(thisField.value, 64)
 				if err != nil {
 					return
 				}
 			}
 		case "query":
-			DNSEntry.query = thisField.value
+			DNSEntry.Query = thisField.value
 		case "qclass":
 			if thisField.value == ZeekNilValue {
-				DNSEntry.qclass = -1
+				DNSEntry.QClass = -1
 			} else {
-				DNSEntry.qclass, err = strconv.Atoi(thisField.value)
+				DNSEntry.QClass, err = strconv.Atoi(thisField.value)
 				if err != nil {
 					return
 				}
 			}
 		case "qclass_name":
-			DNSEntry.qclassName = thisField.value
+			DNSEntry.QClassName = thisField.value
 		case "qtype":
 			if thisField.value == ZeekNilValue {
-				DNSEntry.qtype = -1
+				DNSEntry.QType = -1
 			} else {
-				DNSEntry.qtype, err = strconv.Atoi(thisField.value)
+				DNSEntry.QType, err = strconv.Atoi(thisField.value)
 				if err != nil {
 					return
 				}
 			}
 		case "qtype_name":
-			DNSEntry.qtypeName = thisField.value
+			DNSEntry.QTypeName = thisField.value
 		case "rcode":
 			if thisField.value == ZeekNilValue {
-				DNSEntry.rcode = -1
+				DNSEntry.RCode = -1
 			} else {
-				DNSEntry.rcode, err = strconv.Atoi(thisField.value)
+				DNSEntry.RCode, err = strconv.Atoi(thisField.value)
 				if err != nil {
 					return
 				}
 			}
 		case "rcode_name":
-			DNSEntry.rcodeName = thisField.value
+			DNSEntry.RCodeName = thisField.value
 		case "AA":
 			DNSEntry.AA = thisField.value == "T"
 		case "TC":
@@ -215,7 +215,7 @@ func thisLogEntryToDNSStruct(givenZeekLogEntry ZeekLogEntry, givenHeader *LogFil
 		case "RA":
 			DNSEntry.RA = thisField.value == "T"
 		case "rejected":
-			DNSEntry.rejected = thisField.value == "T"
+			DNSEntry.Rejected = thisField.value == "T"
 		case "Z":
 			if thisField.value == ZeekNilValue {
 				DNSEntry.Z = -1
@@ -227,10 +227,10 @@ func thisLogEntryToDNSStruct(givenZeekLogEntry ZeekLogEntry, givenHeader *LogFil
 			}
 		case "answers":
 			if thisField.value == ZeekNilValue {
-				DNSEntry.answers = append(DNSEntry.answers, "")
+				DNSEntry.Answers = append(DNSEntry.Answers, "")
 			} else {
 				splitSlice := strings.Split(thisField.value, givenHeader.setSeparator)
-				DNSEntry.answers = splitSlice
+				DNSEntry.Answers = splitSlice
 			}
 		case "TTLs":
 			if thisField.value == ZeekNilValue {
@@ -271,7 +271,7 @@ func parseDNSLog(givenFilename string) (parsedResults []DNSEntry, err error) {
 	return
 }
 
-func parseDnsRecurse(givenDirectory string) (allResults []DNSEntry, err error) {
+func ParseDnsRecurse(givenDirectory string) (allResults []DNSEntry, err error) {
 	var filenames []string
 
 	err = filepath.Walk(givenDirectory,
@@ -293,10 +293,7 @@ func parseDnsRecurse(givenDirectory string) (allResults []DNSEntry, err error) {
 			return
 		}
 
-		// TODO: this seems silly and is slow
-		for _, thisAppend := range thisResult {
-			allResults = append(allResults, thisAppend)
-		}
+		allResults = append(allResults, thisResult...)
 	}
 
 	if err != nil {

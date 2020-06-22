@@ -31,9 +31,9 @@ func TestUnixStrToTime(t *testing.T) {
 }
 
 func BasicTestZeekParse(t *testing.T, givenEntry DNSEntry) {
-	assert.True(t, len(givenEntry.uid) >= 15 && len(givenEntry.uid) <= 18)
-	assert.True(t, net.ParseIP(givenEntry.idOrigH) != nil && net.ParseIP(givenEntry.idRespH) != nil)
-	assert.True(t, givenEntry.idOrigP > 1 && givenEntry.idOrigP < 65539)
+	assert.True(t, len(givenEntry.Uid) >= 14 && len(givenEntry.Uid) <= 19)
+	assert.True(t, net.ParseIP(givenEntry.IdOrigH) != nil && net.ParseIP(givenEntry.IdRespH) != nil)
+	assert.True(t, givenEntry.IdOrigP > 1 && givenEntry.IdOrigP < 65539)
 }
 
 func TestThisLogEntryToDNSStruct(t *testing.T) {
@@ -54,48 +54,3 @@ func TestParseDNSLog(t *testing.T) {
 	_, err := parseDNSLog("test_input/simple_dns.log.gz")
 	assert.NoError(t, err)
 }
-
-//
-//// just a quick demo of parsing dns for some use
-//// not actually "testing" anything
-//func TestLocal(t *testing.T) {
-//	allRes, err := parseDNSLog("/usr/local/zeek/logs/2019-11-04/dns.00:00:00-01:00:00.log.gz")
-//	assert.NoError(t, err)
-//	for _, thisResult := range allRes {
-//		BasicTestZeekParse(t, thisResult)
-//		if len(thisResult.answers) > 0 {
-//			for _, thisAnswer := range thisResult.answers {
-//				if len(thisAnswer) > 0 {
-//					if thisResult.idRespH == "192.168.1.1" && !(strings.Contains(thisResult.query, "in-addr.arpa")) {
-//						fmt.Println()
-//						thisResult.Print()
-//						fmt.Println()
-//					} else {
-//						//thisResult.ShortPrint()
-//					}
-//				}
-//			}
-//		}
-//	}
-//}
-//
-//func TestLocal2(t *testing.T) {
-//	allRes, err := parseDnsRecurse("/usr/local/zeek/logs/2020-06-18/")
-//	assert.NoError(t, err)
-//	for _, thisResult := range allRes {
-//		BasicTestZeekParse(t, thisResult)
-//		if len(thisResult.answers) > 0 {
-//			for _, thisAnswer := range thisResult.answers {
-//				if len(thisAnswer) > 0 {
-//					if thisResult.idRespH == "192.168.1.1" && !(strings.Contains(thisResult.query, "in-addr.arpa")) {
-//						fmt.Println()
-//						thisResult.Print()
-//						fmt.Println()
-//					} else {
-//						//thisResult.ShortPrint()
-//					}
-//				}
-//			}
-//		}
-//	}
-//}
