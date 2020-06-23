@@ -21,30 +21,34 @@ import (
 // defined here: https://docs.zeek.org/en/current/scripts/base/protocols/dns/main.zeek.html#type-DNS::Info
 // description of common DNS fields: https://www.zytrax.com/books/dns/ch15/
 // ------------
-// TS:time - timestamp
-// Uid:string - unique id
-// id_orig_h:addr - senders address
-// id_orig_p:addr - senders port
-// id_resp_h:port - responders address
-// id_resp_p:port - responders port
-// Proto:enum - protocol
-// trans_id:count - identifier assigned by the program that generated the Query.
-// RTT:int - round trip time for Query + resp
-// Query:string  - the Query
-// QClass:count - QCLASS field in the question section
-// qclass_name:string - descriptive name of the QCLASS
-// QType:count - type of record being requested (value)
-// qtype_name:string - rtype of record being requested (descriptive string)
-// RCode:count - response being returned (value)
-// rcode_name:string - response being returned (descriptive string)
-// AA:bool - authorative response (set by responder)?
-// TC:bool - truncated response (set by responder?
-// RD:bool - recursion desired (by sender)?
-// RA:bool - recursion available (set by responder)
-// Z:count - reserved field (usually 0)
-// Answers:vector[string] - all Answers
-// TTLs:vector[interval] - vector of TTL of the responses lifespan in cache
-// Rejected:bool - Rejected by server?
+
+// DNSEntry is a fully parsed dns.log line.
+type DNSEntry struct {
+	TS         time.Time // TS:time - timestamp
+	Uid        string    // Uid:string - unique id
+	IdOrigH    string    // id_orig_h:addr - senders address
+	IdOrigP    int       // id_orig_p:addr - senders port
+	IdRespH    string    // id_resp_h:port - responders address
+	IdRespP    int       // id_resp_p:port - responders port
+	Proto      Proto     // Proto:enum - protocol
+	TransId    int       // trans_id:count - identifier assigned by the program that generated the Query.
+	RTT        float64   // RTT:int - round trip time for Query + resp
+	Query      string    // Query:string  - the Query
+	QClass     int       // QClass:count - QCLASS field in the question section
+	QClassName string    // qclass_name:string - descriptive name of the QCLASS
+	QType      int       // QType:count - type of record being requested (value)
+	QTypeName  string    // qtype_name:string - rtype of record being requested (descriptive string)
+	RCode      int       // RCode:count - response being returned (value)
+	RCodeName  string    // rcode_name:string - response being returned (descriptive string)
+	AA         bool      // AA:bool - authorative response (set by responder)?
+	TC         bool      // TC:bool - truncated response (set by responder?
+	RD         bool      // RD:bool - recursion desired (by sender)?
+	RA         bool      // RA:bool - recursion available (set by responder)
+	Z          int       // Z:count - reserved field (usually 0)
+	Answers    []string  // Answers:vector[string] - all Answers
+	TTLs       []float64 // TTLs:vector[interval] - vector of TTL of the responses lifespan in cache
+	Rejected   bool      // Rejected:bool - Rejected by server?
+}
 
 // Proto is an enum of tcp protocol, either TCP or UDP
 type Proto string
@@ -56,34 +60,6 @@ const (
 
 // ZeekNilValue is how null values are expressed in zeek logs, default is "-"
 const ZeekNilValue = "-"
-
-// DNSEntry is a fully parsed dns.log line.
-type DNSEntry struct {
-	TS         time.Time
-	Uid        string
-	IdOrigH    string
-	IdOrigP    int
-	IdRespH    string
-	IdRespP    int
-	Proto      Proto
-	TransId    int
-	RTT        float64
-	Query      string
-	QClass     int
-	QClassName string
-	QType      int
-	QTypeName  string
-	RCode      int
-	RCodeName  string
-	AA         bool
-	TC         bool
-	RD         bool
-	RA         bool
-	Z          int
-	Answers    []string
-	TTLs       []float64
-	Rejected   bool
-}
 
 // Print will just print the DNS Query and response to the screen and include the server client info.
 func (thisEntry *DNSEntry) Print() {
@@ -97,6 +73,7 @@ func (thisEntry *DNSEntry) ShortPrint() {
 	fmt.Printf("[%s] %s -> %s\n", thisEntry.TS, thisEntry.Query, thisEntry.Answers)
 }
 
+// unixStrToTime will convert timestamps from unix format to a time.time
 func unixStrToTime(givenUnixStr string) (resultTime time.Time, err error) {
 	var splitUnixTime []string
 	splitUnixTime = strings.Split(givenUnixStr, ".")
@@ -119,6 +96,7 @@ func unixStrToTime(givenUnixStr string) (resultTime time.Time, err error) {
 	return
 }
 
+// given a zeeklogentry, it will create a DNSEntry
 func thisLogEntryToDNSStruct(givenZeekLogEntry ZeekLogEntry, givenHeader *LogFileOpts) (DNSEntry DNSEntry, err error) {
 
 	if len(givenHeader.setSeparator) == 0 {
@@ -253,7 +231,8 @@ func thisLogEntryToDNSStruct(givenZeekLogEntry ZeekLogEntry, givenHeader *LogFil
 	return
 }
 
-func parseDNSLog(givenFilename string) (parsedResults []DNSEntry, err error) {
+// ParseDNSLog will parse through the given dns log (passed as a filename string)
+func ParseDNSLog(givenFilename string) (parsedResults []DNSEntry, err error) {
 	allUnparsedEntries, header, initialParseErr := parseZeekLog(givenFilename)
 	if initialParseErr != nil {
 		err = initialParseErr
@@ -271,7 +250,8 @@ func parseDNSLog(givenFilename string) (parsedResults []DNSEntry, err error) {
 	return
 }
 
-func ParseDnsRecurse(givenDirectory string) (allResults []DNSEntry, err error) {
+// ParseDNSRecurse will parse through the given directory and recurse further down (passed as a directory string)
+func ParseDNSRecurse(givenDirectory string) (allResults []DNSEntry, err error) {
 	var filenames []string
 
 	err = filepath.Walk(givenDirectory,
@@ -286,7 +266,7 @@ func ParseDnsRecurse(givenDirectory string) (allResults []DNSEntry, err error) {
 		})
 
 	for _, thisFile := range filenames {
-		thisResult, parseErr := parseDNSLog(thisFile)
+		thisResult, parseErr := ParseDNSLog(thisFile)
 		if parseErr != nil {
 			err = parseErr
 			return

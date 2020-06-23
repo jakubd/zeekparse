@@ -25,7 +25,7 @@ func main() {
 }
 
 func ShowDNSForDay(givenDateTime string) (err error) {
-	allRes, err := zeekparse.ParseDnsRecurse("/usr/local/zeek/logs/" + givenDateTime + "/")
+	allRes, err := zeekparse.ParseDNSRecurse("/usr/local/zeek/logs/" + givenDateTime + "/")
 	if err != nil {
 		return
 	}

@@ -51,6 +51,6 @@ func TestThisLogEntryToDNSStruct(t *testing.T) {
 }
 
 func TestParseDNSLog(t *testing.T) {
-	_, err := parseDNSLog("test_input/simple_dns.log.gz")
+	_, err := ParseDNSLog("test_input/simple_dns.log.gz")
 	assert.NoError(t, err)
 }
