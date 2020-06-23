@@ -1,4 +1,4 @@
-package zeekparse
+package go_zeek_logparse
 
 import (
 	"github.com/stretchr/testify/assert"

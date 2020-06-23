@@ -3,7 +3,7 @@ Deals with dns.log parsing specifically.  Takes constructs created in logparse.g
 and generates type cast structures specifically for dns.log parsing.
 */
 
-package zeekparse
+package go_zeek_logparse
 
 import (
 	"errors"

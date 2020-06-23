@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/jakubd/go-zeek-logparse/go-zeek-logparse"
+	"github.com/jakubd/go-zeek-logparse"
 	log "github.com/sirupsen/logrus"
 	"strings"
 )
@@ -25,7 +25,7 @@ func main() {
 }
 
 func ShowDNSForDay(givenDateTime string) (err error) {
-	allRes, err := zeekparse.ParseDnsRecurse("/usr/local/zeek/logs/" + givenDateTime + "/")
+	allRes, err := go_zeek_logparse.ParseDnsRecurse("/usr/local/zeek/logs/" + givenDateTime + "/")
 	if err != nil {
 		return
 	}
