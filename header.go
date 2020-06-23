@@ -4,7 +4,7 @@ LogFileOpts.  This structure is needed to properly parse the rest of the file
 as well as some meta data.
 */
 
-package go_zeek_logparse
+package zeekparse
 
 import (
 	"bufio"

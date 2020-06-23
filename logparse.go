@@ -7,7 +7,7 @@ The representation is a slice of ZeekLogEntry which itself is a slice of
 ZeekLogFields that have fieldNBame, fieldType and values all as strings.
 */
 
-package go_zeek_logparse
+package zeekparse
 
 import (
 	"errors"

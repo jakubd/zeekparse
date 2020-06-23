@@ -3,7 +3,7 @@ Deals with dns.log parsing specifically.  Takes constructs created in logparse.g
 and generates type cast structures specifically for dns.log parsing.
 */
 
-package go_zeek_logparse
+package zeekparse
 
 import (
 	"errors"
@@ -94,7 +94,7 @@ func (thisEntry *DNSEntry) Print() {
 
 // ShortPrint will just print the DNS Query and response as a one liner
 func (thisEntry *DNSEntry) ShortPrint() {
-	fmt.Printf("\t%s -> %s\n", thisEntry.Query, thisEntry.Answers)
+	fmt.Printf("[%s] %s -> %s\n", thisEntry.TS, thisEntry.Query, thisEntry.Answers)
 }
 
 func unixStrToTime(givenUnixStr string) (resultTime time.Time, err error) {
@@ -286,7 +286,6 @@ func ParseDnsRecurse(givenDirectory string) (allResults []DNSEntry, err error) {
 		})
 
 	for _, thisFile := range filenames {
-		print(thisFile)
 		thisResult, parseErr := parseDNSLog(thisFile)
 		if parseErr != nil {
 			err = parseErr

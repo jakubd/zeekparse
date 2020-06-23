@@ -1,4 +1,4 @@
-package go_zeek_logparse
+package zeekparse
 
 import (
 	log "github.com/sirupsen/logrus"
