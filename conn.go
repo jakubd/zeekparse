@@ -1,6 +1,7 @@
 package zeekparse
 
 import (
+	"fmt"
 	"strings"
 	"time"
 )
@@ -10,6 +11,10 @@ import (
 type ConnStateObj struct {
 	Code    string
 	Summary string
+}
+
+func (c *ConnStateObj) Print() {
+	fmt.Printf("%s:%s\n", c.Code, c.Summary)
 }
 
 func NewConnStateObj(givenCode string) *ConnStateObj {
@@ -42,6 +47,9 @@ func NewConnStateObj(givenCode string) *ConnStateObj {
 		c.Summary = "Responder sent a SYN ACK followed by a FIN, we never saw a SYN from the originator."
 	case "OTH":
 		c.Summary = "No SYN seen, just midstream traffic (a “partial connection” that was not later closed)."
+	default:
+		c.Code = givenCode
+		c.Summary = "ERR: unknown code"
 	}
 	return c
 }
@@ -68,5 +76,10 @@ type ConnEntry struct {
 	OrigIpBytes int          // orig_ip_bytes:int Number of IP level bytes that the originator sent (as seen on the wire, taken from the IP total_length header field). Only set if use_conn_size_analyzer = T.
 	RespPkts    int          // resp_pkts:int Number of packets that the responder sent. Only set if use_conn_size_analyzer = T.
 	RespIpBytes int          // resp_ip_bytes:int Number of IP level bytes that the responder sent (as seen on the wire, taken from the IP total_length header field). Only set if use_conn_size_analyzer = T.
-	// tunnel_parents: TODO: unimplemented If this connection was over a tunnel, indicate the uid values for any encapsulating parent connections used over the lifetime of this inner connection.
+	// tunnel_parents: TODO: unimplemented: If this connection was over a tunnel, indicate the uid values for any encapsulating parent connections used over the lifetime of this inner connection.
+}
+
+func (c *ConnEntry) Print() {
+	fmt.Printf("(%s) client {%s:%d} talks to {%s:%d}:\n",
+		c.TS.String(), c.IdOrigH, c.IdOrigP, c.IdRespH, c.IdRespP)
 }
