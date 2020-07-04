@@ -20,6 +20,7 @@ func (c *ConnStateObj) Print() {
 	fmt.Printf("%s:%s\n", c.Code, c.Summary)
 }
 
+// NewConnStateObj instantiates a new ConnStateObj with the given code.
 func NewConnStateObj(givenCode string) *ConnStateObj {
 	c := new(ConnStateObj)
 	c.Code = strings.ToUpper(givenCode)
@@ -57,6 +58,7 @@ func NewConnStateObj(givenCode string) *ConnStateObj {
 	return c
 }
 
+// ConnEntry is a fully parsed conn.log line
 type ConnEntry struct {
 	TS      time.Time // TS:time - timestamp
 	Uid     string    // Uid:string - unique id
@@ -130,13 +132,87 @@ func thisLogEntryToConnStruct(givenLogEntry ZeekLogEntry, givenLogOpts *LogFileO
 			connEntry.Service = thisField.value
 		case "duration":
 			if thisField.value == givenLogOpts.unsetField {
-				connEntry.Duration = 0
+				connEntry.Duration = -1
 			} else {
 				connEntry.Duration, err = strconv.ParseFloat(thisField.value, 64)
 				if err != nil {
 					return
 				}
 			}
+		case "orig_bytes":
+			if thisField.value == givenLogOpts.unsetField {
+				connEntry.OrigBytes = -1
+			} else {
+				connEntry.OrigBytes, err = strconv.Atoi(thisField.value)
+				if err != nil {
+					return
+				}
+			}
+		case "resp_bytes":
+			if thisField.value == givenLogOpts.unsetField {
+				connEntry.RespBytes = -1
+			} else {
+				connEntry.RespBytes, err = strconv.Atoi(thisField.value)
+				if err != nil {
+					return
+				}
+			}
+		case "conn_state":
+			thisConState := NewConnStateObj(thisField.value)
+			connEntry.ConnState = *thisConState
+		case "local_orig":
+			connEntry.LocalOrig = thisField.value == "T"
+		case "local_resp":
+			connEntry.LocalResp = thisField.value == "T"
+		case "missed_bytes":
+			if thisField.value == givenLogOpts.unsetField {
+				connEntry.MissedBytes = -1
+			} else {
+				connEntry.MissedBytes, err = strconv.Atoi(thisField.value)
+				if err != nil {
+					return
+				}
+			}
+		case "history":
+			connEntry.History = thisField.value
+		case "orig_pkts":
+			if thisField.value == givenLogOpts.unsetField {
+				connEntry.OrigPkts = -1
+			} else {
+				connEntry.OrigPkts, err = strconv.Atoi(thisField.value)
+				if err != nil {
+					return
+				}
+			}
+		case "orig_ip_bytes":
+			if thisField.value == givenLogOpts.unsetField {
+				connEntry.OrigIpBytes = -1
+			} else {
+				connEntry.OrigIpBytes, err = strconv.Atoi(thisField.value)
+				if err != nil {
+					return
+				}
+			}
+		case "resp_pkts":
+			if thisField.value == givenLogOpts.unsetField {
+				connEntry.RespPkts = -1
+			} else {
+				connEntry.RespPkts, err = strconv.Atoi(thisField.value)
+				if err != nil {
+					return
+				}
+			}
+		case "resp_ip_bytes":
+			if thisField.value == givenLogOpts.unsetField {
+				connEntry.RespIpBytes = -1
+			} else {
+				connEntry.RespIpBytes, err = strconv.Atoi(thisField.value)
+				if err != nil {
+					return
+				}
+			}
+		case "tunnel_parents":
+			// TODO: this is unimplemented and that is fine.
 		default:
 			log.Infof("unimplemented field: %s", thisField.fieldName)
 			unimplementedFieldCount++
