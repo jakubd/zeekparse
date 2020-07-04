@@ -1,10 +1,49 @@
 package zeekparse
 
-import "time"
+import (
+	"strings"
+	"time"
+)
 
-type ConnState struct {
+// conn log format described in https://docs.zeek.org/en/current/scripts/base/protocols/conn/main.zeek.html#type-Conn::Info
+
+type ConnStateObj struct {
 	Code    string
 	Summary string
+}
+
+func NewConnStateObj(givenCode string) *ConnStateObj {
+	c := new(ConnStateObj)
+	c.Code = strings.ToUpper(givenCode)
+	switch c.Code {
+	case "S0":
+		c.Summary = "Connection attempt seen, no reply."
+	case "S1":
+		c.Summary = "Connection established, not terminated."
+	case "SF":
+		c.Summary = "Normal establishment and termination."
+	case "REJ":
+		c.Summary = "Connection attempt rejected."
+	case "S2":
+		c.Summary = "Connection established and close attempt by originator seen (but no reply from responder)."
+	case "S3":
+		c.Summary = "Connection established and close attempt by responder seen (but no reply from originator)."
+	case "RSTO":
+		c.Summary = "Connection established, originator aborted (sent a RST)."
+	case "RSTR":
+		c.Summary = "Responder sent a RST."
+	case "RSTOS0":
+		c.Summary = "Originator sent a SYN followed by a RST, we never saw a SYN-ACK from the responder."
+	case "RSTRH":
+		c.Summary = "Responder sent a SYN ACK followed by a RST, we never saw a SYN from the (purported) originator."
+	case "SH":
+		c.Summary = "Originator sent a SYN followed by a FIN, we never saw a SYN ACK from the responder (hence the connection was “half” open)."
+	case "SHR":
+		c.Summary = "Responder sent a SYN ACK followed by a FIN, we never saw a SYN from the originator."
+	case "OTH":
+		c.Summary = "No SYN seen, just midstream traffic (a “partial connection” that was not later closed)."
+	}
+	return c
 }
 
 type ConnEntry struct {
@@ -16,18 +55,18 @@ type ConnEntry struct {
 	IdRespP int       // id_resp_p:port - responders port
 	Proto   Proto     // Proto:enum - protocol
 	// ---------------
-	// service:str An identification of an application protocol being sent over the connection.
-	// duration:float64 How long the connection lasted. For 3-way or 4-way connection tear-downs, this will not include the final ACK.
-	// orig_bytes:int he number of payload bytes the originator sent. For TCP this is taken from sequence numbers and might be inaccurate (e.g., due to large connections).
-	// resp_bytes:int The number of payload bytes the responder sent. See orig_bytes.
-	// conn_state:ConnState
-	// local_orig:bool If the connection is originated locally, this value will be T. If it was originated remotely it will be F. In the case that the Site::local_nets variable is undefined, this field will be left empty at all times.
-	// local_resp:bool If the connection is responded to locally, this value will be T. If it was responded to remotely it will be F. In the case that the Site::local_nets variable is undefined, this field will be left empty at all times.
-	// missed_bytes:int If the connection is responded to locally, this value will be T. If it was responded to remotely it will be F. In the case that the Site::local_nets variable is undefined, this field will be left empty at all times.
-	// history:str state history as string
-	// orig_pkts:int Number of packets that the originator sent. Only set if use_conn_size_analyzer = T.
-	// orig_ip_bytes:int Number of IP level bytes that the originator sent (as seen on the wire, taken from the IP total_length header field). Only set if use_conn_size_analyzer = T.
-	// resp_pkts:int Number of packets that the responder sent. Only set if use_conn_size_analyzer = T.
-	// resp_ip_bytes:int Number of IP level bytes that the responder sent (as seen on the wire, taken from the IP total_length header field). Only set if use_conn_size_analyzer = T.
+	Service     string       // service:str An identification of an application protocol being sent over the connection.
+	Duration    float64      // duration:float64 How long the connection lasted. For 3-way or 4-way connection tear-downs, this will not include the final ACK.
+	OrigBytes   int          // orig_bytes:int he number of payload bytes the originator sent. For TCP this is taken from sequence numbers and might be inaccurate (e.g., due to large connections).
+	RespBytes   int          // resp_bytes:int The number of payload bytes the responder sent. See orig_bytes.
+	ConnState   ConnStateObj // conn_state:ConnState
+	LocalOrig   bool         // local_orig:bool If the connection is originated locally, this value will be T. If it was originated remotely it will be F. In the case that the Site::local_nets variable is undefined, this field will be left empty at all times.
+	LocalResp   bool         // local_resp:bool If the connection is responded to locally, this value will be T. If it was responded to remotely it will be F. In the case that the Site::local_nets variable is undefined, this field will be left empty at all times.
+	MissedBytes int          // missed_bytes:int If the connection is responded to locally, this value will be T. If it was responded to remotely it will be F. In the case that the Site::local_nets variable is undefined, this field will be left empty at all times.
+	History     string       // history:str state history as string
+	OrigPkts    int          // orig_pkts:int Number of packets that the originator sent. Only set if use_conn_size_analyzer = T.
+	OrigIpBytes int          // orig_ip_bytes:int Number of IP level bytes that the originator sent (as seen on the wire, taken from the IP total_length header field). Only set if use_conn_size_analyzer = T.
+	RespPkts    int          // resp_pkts:int Number of packets that the responder sent. Only set if use_conn_size_analyzer = T.
+	RespIpBytes int          // resp_ip_bytes:int Number of IP level bytes that the responder sent (as seen on the wire, taken from the IP total_length header field). Only set if use_conn_size_analyzer = T.
 	// tunnel_parents: TODO: unimplemented If this connection was over a tunnel, indicate the uid values for any encapsulating parent connections used over the lifetime of this inner connection.
 }
