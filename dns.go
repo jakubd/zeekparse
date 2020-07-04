@@ -51,6 +51,7 @@ type DNSEntry struct {
 	Rejected   bool      // Rejected:bool - Rejected by server?
 }
 
+// TODO: move to common
 // Proto is an enum of tcp protocol, either TCP or UDP
 type Proto string
 
@@ -74,6 +75,7 @@ func (thisEntry *DNSEntry) ShortPrint() {
 	fmt.Printf("[%s] %s -> %s\n", thisEntry.TS, thisEntry.Query, thisEntry.Answers)
 }
 
+// TODO: move to common
 // unixStrToTime will convert timestamps from unix format to a time.time
 func unixStrToTime(givenUnixStr string) (resultTime time.Time, err error) {
 	var splitUnixTime []string
