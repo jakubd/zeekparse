@@ -4,7 +4,9 @@ import (
 	"fmt"
 	zeekparse "github.com/jakubd/go-zeek-logparse"
 	log "github.com/sirupsen/logrus"
+	"net"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -41,6 +43,14 @@ func lastXMonths(x int) (dateStrRange []string) {
 	return DateRange(fromTime, toTime)
 }
 
+func isMulticastOrBroadcastAddress(givenAddress string) bool {
+	if givenAddress == "255.255.255.255" {
+		return true
+	}
+	ip := net.ParseIP(givenAddress)
+	return ip.IsMulticast()
+}
+
 func main() {
 	setUpLogger()
 	log.Info("started")
@@ -53,9 +63,9 @@ func main() {
 		}
 
 		for _, thisRes := range allConn {
-			if thisRes.IdOrigH == "192.168.1.139" {
+			if strings.HasPrefix(thisRes.IdOrigH, "192.168.1.") && !strings.HasPrefix(thisRes.IdRespH, "192.168.1.") && !isMulticastOrBroadcastAddress(thisRes.IdRespH) && thisRes.Proto != zeekparse.NONE {
 				if thisRes.OrigBytes > thisRes.RespBytes {
-					fmt.Printf("{client %s:%d} uploaded %d bytes to %s:%d\n", thisRes.IdOrigH, thisRes.IdOrigP,
+					fmt.Printf("{%s} client [%s:%d] uploaded %d bytes to [%s:%d]\n", thisRes.TS.String(), thisRes.IdOrigH, thisRes.IdOrigP,
 						thisRes.OrigBytes, thisRes.IdRespH, thisRes.IdRespP)
 				}
 			}

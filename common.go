@@ -34,6 +34,7 @@ func unixStrToTime(givenUnixStr string) (resultTime time.Time, err error) {
 type Proto string
 
 const (
-	TCP Proto = "TCP"
-	UDP Proto = "UDP"
+	TCP  Proto = "TCP"
+	UDP  Proto = "UDP"
+	NONE Proto = "None"
 )

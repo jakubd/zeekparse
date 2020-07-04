@@ -129,6 +129,8 @@ func thisLogEntryToConnStruct(givenLogEntry ZeekLogEntry, givenLogOpts *LogFileO
 				connEntry.Proto = UDP
 			} else if thisField.value == "tcp" {
 				connEntry.Proto = TCP
+			} else {
+				connEntry.Proto = NONE
 			}
 		case "service":
 			connEntry.Service = thisField.value
