@@ -35,3 +35,8 @@ func TestThisLogEntryToConnStruct(t *testing.T) {
 	}
 	assert.NoError(t, compErr)
 }
+
+func TestParseConnLog(t *testing.T) {
+	_, err := ParseConnLog("test_input/simple_conn.log.gz")
+	assert.NoError(t, err)
+}

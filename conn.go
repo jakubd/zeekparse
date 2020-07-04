@@ -4,6 +4,8 @@ import (
 	"errors"
 	"fmt"
 	log "github.com/sirupsen/logrus"
+	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
@@ -222,5 +224,56 @@ func thisLogEntryToConnStruct(givenLogEntry ZeekLogEntry, givenLogOpts *LogFileO
 	if unimplementedFieldCount > 0 {
 		log.Infof("this many unimplemented fields: %d", unimplementedFieldCount)
 	}
+	return
+}
+
+// ParseConnLog will parse through the given conn log (passed as a filename string)
+func ParseConnLog(givenFilename string) (parsedResults []ConnEntry, err error) {
+	allUnparsedEntries, header, initialParseErr := parseZeekLog(givenFilename)
+	if initialParseErr != nil {
+		err = initialParseErr
+		return
+	}
+	for _, thisResult := range allUnparsedEntries {
+		var connRes ConnEntry
+		connRes, err = thisLogEntryToConnStruct(thisResult, header)
+		if err != nil {
+			log.Error(err)
+			return
+		}
+		parsedResults = append(parsedResults, connRes)
+	}
+	return
+}
+
+// ParseConnRecurse will parse through the given directory and recurse further down (passed as a directory string)
+func ParseConnRecurse(givenDirectory string) (allResults []ConnEntry, err error) {
+	var filenames []string
+
+	err = filepath.Walk(givenDirectory,
+		func(path string, info os.FileInfo, err error) error {
+			if err != nil {
+				return err
+			}
+			if strings.Contains(path, "dns.") {
+				filenames = append(filenames, path)
+			}
+			return nil
+		})
+
+	for _, thisFile := range filenames {
+		thisResult, parseErr := ParseConnLog(thisFile)
+		if parseErr != nil {
+			err = parseErr
+			return
+		}
+
+		allResults = append(allResults, thisResult...)
+	}
+
+	if err != nil {
+		return
+	}
+
 	return
 }
