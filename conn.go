@@ -255,7 +255,7 @@ func ParseConnRecurse(givenDirectory string) (allResults []ConnEntry, err error)
 			if err != nil {
 				return err
 			}
-			if strings.Contains(path, "dns.") {
+			if strings.Contains(path, "conn.") {
 				filenames = append(filenames, path)
 			}
 			return nil
