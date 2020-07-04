@@ -17,7 +17,7 @@ func setUpLogger() {
 func main() {
 	setUpLogger()
 	log.Info("started")
-	err := ShowDNSForDay("2020-06-22")
+	err := ShowDNSForDay("2020-07-03")
 	if err != nil {
 		panic("some error")
 	}

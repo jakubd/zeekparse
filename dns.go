@@ -24,13 +24,14 @@ import (
 
 // DNSEntry is a fully parsed dns.log line.
 type DNSEntry struct {
-	TS         time.Time // TS:time - timestamp
-	Uid        string    // Uid:string - unique id
-	IdOrigH    string    // id_orig_h:addr - senders address
-	IdOrigP    int       // id_orig_p:addr - senders port
-	IdRespH    string    // id_resp_h:port - responders address
-	IdRespP    int       // id_resp_p:port - responders port
-	Proto      Proto     // Proto:enum - protocol
+	TS      time.Time // TS:time - timestamp
+	Uid     string    // Uid:string - unique id
+	IdOrigH string    // id_orig_h:addr - senders address
+	IdOrigP int       // id_orig_p:addr - senders port
+	IdRespH string    // id_resp_h:port - responders address
+	IdRespP int       // id_resp_p:port - responders port
+	Proto   Proto     // Proto:enum - protocol
+	// ---------------
 	TransId    int       // trans_id:count - identifier assigned by the program that generated the Query.
 	RTT        float64   // RTT:int - round trip time for Query + resp
 	Query      string    // Query:string  - the Query
