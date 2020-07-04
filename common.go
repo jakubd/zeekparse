@@ -37,6 +37,3 @@ const (
 	TCP Proto = "TCP"
 	UDP Proto = "UDP"
 )
-
-// ZeekNilValue is how null values are expressed in zeek logs, default is "-"
-const ZeekNilValue = "-"

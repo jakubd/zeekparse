@@ -64,9 +64,9 @@ func (thisEntry *DNSEntry) ShortPrint() {
 }
 
 // given a zeeklogentry, it will create a DNSEntry
-func thisLogEntryToDNSStruct(givenZeekLogEntry ZeekLogEntry, givenHeader *LogFileOpts) (DNSEntry DNSEntry, err error) {
+func thisLogEntryToDNSStruct(givenZeekLogEntry ZeekLogEntry, givenLogOpts *LogFileOpts) (DNSEntry DNSEntry, err error) {
 
-	if len(givenHeader.setSeparator) == 0 {
+	if len(givenLogOpts.setSeparator) == 0 {
 		err = errors.New("no set seperator in header can't parse")
 		return
 	}
@@ -108,7 +108,7 @@ func thisLogEntryToDNSStruct(givenZeekLogEntry ZeekLogEntry, givenHeader *LogFil
 				return
 			}
 		case "rtt":
-			if thisField.value == ZeekNilValue {
+			if thisField.value == givenLogOpts.unsetField {
 				DNSEntry.RTT = -1
 			} else {
 				DNSEntry.RTT, err = strconv.ParseFloat(thisField.value, 64)
@@ -119,7 +119,7 @@ func thisLogEntryToDNSStruct(givenZeekLogEntry ZeekLogEntry, givenHeader *LogFil
 		case "query":
 			DNSEntry.Query = thisField.value
 		case "qclass":
-			if thisField.value == ZeekNilValue {
+			if thisField.value == givenLogOpts.unsetField {
 				DNSEntry.QClass = -1
 			} else {
 				DNSEntry.QClass, err = strconv.Atoi(thisField.value)
@@ -130,7 +130,7 @@ func thisLogEntryToDNSStruct(givenZeekLogEntry ZeekLogEntry, givenHeader *LogFil
 		case "qclass_name":
 			DNSEntry.QClassName = thisField.value
 		case "qtype":
-			if thisField.value == ZeekNilValue {
+			if thisField.value == givenLogOpts.unsetField {
 				DNSEntry.QType = -1
 			} else {
 				DNSEntry.QType, err = strconv.Atoi(thisField.value)
@@ -141,7 +141,7 @@ func thisLogEntryToDNSStruct(givenZeekLogEntry ZeekLogEntry, givenHeader *LogFil
 		case "qtype_name":
 			DNSEntry.QTypeName = thisField.value
 		case "rcode":
-			if thisField.value == ZeekNilValue {
+			if thisField.value == givenLogOpts.unsetField {
 				DNSEntry.RCode = -1
 			} else {
 				DNSEntry.RCode, err = strconv.Atoi(thisField.value)
@@ -162,7 +162,7 @@ func thisLogEntryToDNSStruct(givenZeekLogEntry ZeekLogEntry, givenHeader *LogFil
 		case "rejected":
 			DNSEntry.Rejected = thisField.value == "T"
 		case "Z":
-			if thisField.value == ZeekNilValue {
+			if thisField.value == givenLogOpts.unsetField {
 				DNSEntry.Z = -1
 			} else {
 				DNSEntry.Z, err = strconv.Atoi(thisField.value)
@@ -171,17 +171,17 @@ func thisLogEntryToDNSStruct(givenZeekLogEntry ZeekLogEntry, givenHeader *LogFil
 				}
 			}
 		case "answers":
-			if thisField.value == ZeekNilValue {
+			if thisField.value == givenLogOpts.unsetField {
 				DNSEntry.Answers = append(DNSEntry.Answers, "")
 			} else {
-				splitSlice := strings.Split(thisField.value, givenHeader.setSeparator)
+				splitSlice := strings.Split(thisField.value, givenLogOpts.setSeparator)
 				DNSEntry.Answers = splitSlice
 			}
 		case "TTLs":
-			if thisField.value == ZeekNilValue {
+			if thisField.value == givenLogOpts.unsetField {
 				DNSEntry.TTLs = append(DNSEntry.TTLs, -1)
 			} else {
-				splitSlice := strings.Split(thisField.value, givenHeader.setSeparator)
+				splitSlice := strings.Split(thisField.value, givenLogOpts.setSeparator)
 				for _, thisEntry := range splitSlice {
 					var thisFloat float64
 					thisFloat, err = strconv.ParseFloat(thisEntry, 64)

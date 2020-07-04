@@ -93,6 +93,8 @@ func thisLogEntryToConnStruct(givenLogEntry ZeekLogEntry, givenLogOpts *LogFileO
 		return
 	}
 
+	unimplementedFieldCount := 0
+
 	for _, thisField := range givenLogEntry {
 		switch thisField.fieldName {
 		case "ts":
@@ -124,9 +126,25 @@ func thisLogEntryToConnStruct(givenLogEntry ZeekLogEntry, givenLogOpts *LogFileO
 			} else if thisField.value == "tcp" {
 				connEntry.Proto = TCP
 			}
+		case "service":
+			connEntry.Service = thisField.value
+		case "duration":
+			if thisField.value == givenLogOpts.unsetField {
+				connEntry.Duration = 0
+			} else {
+				connEntry.Duration, err = strconv.ParseFloat(thisField.value, 64)
+				if err != nil {
+					return
+				}
+			}
 		default:
 			log.Infof("unimplemented field: %s", thisField.fieldName)
+			unimplementedFieldCount++
 		}
+	}
+
+	if unimplementedFieldCount > 0 {
+		log.Infof("this many unimplemented fields: %d", unimplementedFieldCount)
 	}
 	return
 }
