@@ -2,6 +2,7 @@ package zeekparse
 
 import (
 	"github.com/stretchr/testify/assert"
+	"net"
 	"testing"
 )
 
@@ -20,4 +21,17 @@ func TestNewConnStateObj(t *testing.T) {
 	assert.Equal(t, junk.Code, "s0asdfas")
 	assert.Equal(t, junk.Summary, "ERR: unknown code")
 	junk.Print()
+}
+
+func TestThisLogEntryToConnStruct(t *testing.T) {
+	// compressed case
+	compressedResults, header, compErr := parseZeekLog("test_input/simple_conn.log.gz")
+	for _, thisResult := range compressedResults {
+		connRes, connErr := thisLogEntryToConnStruct(thisResult, header)
+		assert.NoError(t, connErr)
+		assert.True(t, len(connRes.Uid) >= 14 && len(connRes.Uid) <= 19)
+		assert.True(t, net.ParseIP(connRes.IdOrigH) != nil && net.ParseIP(connRes.IdRespH) != nil)
+		assert.True(t, connRes.IdOrigP > 1 && connRes.IdOrigP < 65539)
+	}
+	assert.NoError(t, compErr)
 }

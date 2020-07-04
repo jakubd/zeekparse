@@ -51,18 +51,6 @@ type DNSEntry struct {
 	Rejected   bool      // Rejected:bool - Rejected by server?
 }
 
-// TODO: move to common
-// Proto is an enum of tcp protocol, either TCP or UDP
-type Proto string
-
-const (
-	TCP Proto = "TCP"
-	UDP Proto = "UDP"
-)
-
-// ZeekNilValue is how null values are expressed in zeek logs, default is "-"
-const ZeekNilValue = "-"
-
 // Print will just print the DNS Query and response to the screen and include the server client info.
 func (thisEntry *DNSEntry) Print() {
 	fmt.Printf("(%s) client {%s:%d} asks server {%s:%d}:\n",
@@ -73,30 +61,6 @@ func (thisEntry *DNSEntry) Print() {
 // ShortPrint will just print the DNS Query and response as a one liner
 func (thisEntry *DNSEntry) ShortPrint() {
 	fmt.Printf("[%s] %s -> %s\n", thisEntry.TS, thisEntry.Query, thisEntry.Answers)
-}
-
-// TODO: move to common
-// unixStrToTime will convert timestamps from unix format to a time.time
-func unixStrToTime(givenUnixStr string) (resultTime time.Time, err error) {
-	var splitUnixTime []string
-	splitUnixTime = strings.Split(givenUnixStr, ".")
-	if len(splitUnixTime) != 2 {
-		err = errors.New("incorrect input unixtime value")
-		return
-	}
-
-	var intSec, intNSec int64
-	intSec, err = strconv.ParseInt(splitUnixTime[0], 10, 64)
-	if err != nil {
-		return
-	}
-
-	intNSec, err = strconv.ParseInt(splitUnixTime[1], 10, 64)
-	if err != nil {
-		return
-	}
-	resultTime = time.Unix(intSec, intNSec)
-	return
 }
 
 // given a zeeklogentry, it will create a DNSEntry

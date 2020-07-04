@@ -1,7 +1,10 @@
 package zeekparse
 
 import (
+	"errors"
 	"fmt"
+	log "github.com/sirupsen/logrus"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -82,4 +85,48 @@ type ConnEntry struct {
 func (c *ConnEntry) Print() {
 	fmt.Printf("(%s) client {%s:%d} talks to {%s:%d}:\n",
 		c.TS.String(), c.IdOrigH, c.IdOrigP, c.IdRespH, c.IdRespP)
+}
+
+func thisLogEntryToConnStruct(givenLogEntry ZeekLogEntry, givenLogOpts *LogFileOpts) (connEntry ConnEntry, err error) {
+	if len(givenLogOpts.setSeparator) == 0 {
+		err = errors.New("no set seperator in header can't parse")
+		return
+	}
+
+	for _, thisField := range givenLogEntry {
+		switch thisField.fieldName {
+		case "ts":
+			connEntry.TS, err = unixStrToTime(thisField.value)
+			if err != nil {
+				return
+			}
+		case "uid":
+			connEntry.Uid = thisField.value
+		case "id.orig_h":
+			connEntry.IdOrigH = thisField.value
+		case "id.orig_p":
+			var convErr error
+			connEntry.IdOrigP, convErr = strconv.Atoi(thisField.value)
+			if convErr != nil {
+				err = convErr
+				return
+			}
+		case "id.resp_h":
+			connEntry.IdRespH = thisField.value
+		case "id.resp_p":
+			connEntry.IdRespP, err = strconv.Atoi(thisField.value)
+			if err != nil {
+				return
+			}
+		case "proto":
+			if thisField.value == "udp" {
+				connEntry.Proto = UDP
+			} else if thisField.value == "tcp" {
+				connEntry.Proto = TCP
+			}
+		default:
+			log.Infof("unimplemented field: %s", thisField.fieldName)
+		}
+	}
+	return
 }
