@@ -6,7 +6,7 @@ package main
 
 import (
 	"fmt"
-	zeekparse "github.com/jakubd/go-zeek-logparse"
+	"github.com/jakubd/go-zeek-logparse"
 	"strings"
 )
 
