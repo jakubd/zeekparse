@@ -102,7 +102,7 @@ func thisLogEntryToConnStruct(givenLogEntry ZeekLogEntry, givenLogOpts *LogFileO
 	for _, thisField := range givenLogEntry {
 		switch thisField.fieldName {
 		case "ts":
-			connEntry.TS, err = unixStrToTime(thisField.value)
+			connEntry.TS, err = UnixStrToTime(thisField.value)
 			if err != nil {
 				return
 			}
@@ -277,5 +277,12 @@ func ParseConnRecurse(givenDirectory string) (allResults []ConnEntry, err error)
 		return
 	}
 
+	return
+}
+
+// GetAllConnForDay returns all entries on the given day from the default zeek directory as a slice of
+// parsed ConnEntry objects
+func GetAllConnForDay(givenDay string) (allRes []ConnEntry, err error) {
+	allRes, err = ParseConnRecurse("/usr/local/zeek/logs/" + givenDay + "/")
 	return
 }

@@ -24,6 +24,8 @@ My plan is to support these logs: dns, conn, http, ssl, ssh and dhcp.
 * [X] Can parse log entries into Go structures.
 * [x] Can parse dns.log entries.
 * [x] Can parse conn.log entries.
+
+# Logs that might be useful some day 
 * [ ] Can parse http.log entries.
 * [ ] Can parse ssl.log entries.
 * [ ] Can parse ssh.log entries.

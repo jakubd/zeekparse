@@ -22,8 +22,8 @@ import (
 // description of common DNS fields: https://www.zytrax.com/books/dns/ch15/
 // ------------
 
-// DNSEntry is a fully parsed dns.log line.
-type DNSEntry struct {
+// DnsEntry is a fully parsed dns.log line.
+type DnsEntry struct {
 	TS      time.Time // TS:time - timestamp
 	Uid     string    // Uid:string - unique id
 	IdOrigH string    // id_orig_h:addr - senders address
@@ -52,19 +52,19 @@ type DNSEntry struct {
 }
 
 // Print will just print the DNS Query and response to the screen and include the server client info.
-func (thisEntry *DNSEntry) Print() {
+func (thisEntry *DnsEntry) Print() {
 	fmt.Printf("(%s) client {%s:%d} asks server {%s:%d}:\n",
 		thisEntry.TS.String(), thisEntry.IdOrigH, thisEntry.IdOrigP, thisEntry.IdRespH, thisEntry.IdRespP)
 	fmt.Printf("\t%s -> %s\n", thisEntry.Query, thisEntry.Answers)
 }
 
 // ShortPrint will just print the DNS Query and response as a one liner
-func (thisEntry *DNSEntry) ShortPrint() {
+func (thisEntry *DnsEntry) ShortPrint() {
 	fmt.Printf("[%s] %s -> %s\n", thisEntry.TS, thisEntry.Query, thisEntry.Answers)
 }
 
-// given a zeeklogentry, it will create a DNSEntry
-func thisLogEntryToDNSStruct(givenZeekLogEntry ZeekLogEntry, givenLogOpts *LogFileOpts) (DNSEntry DNSEntry, err error) {
+// given a zeeklogentry, it will create a DnsEntry
+func thisLogEntryToDNSStruct(givenZeekLogEntry ZeekLogEntry, givenLogOpts *LogFileOpts) (DNSEntry DnsEntry, err error) {
 
 	if len(givenLogOpts.setSeparator) == 0 {
 		err = errors.New("no set seperator in header can't parse")
@@ -74,7 +74,7 @@ func thisLogEntryToDNSStruct(givenZeekLogEntry ZeekLogEntry, givenLogOpts *LogFi
 	for _, thisField := range givenZeekLogEntry {
 		switch thisField.fieldName {
 		case "ts":
-			DNSEntry.TS, err = unixStrToTime(thisField.value)
+			DNSEntry.TS, err = UnixStrToTime(thisField.value)
 			if err != nil {
 				return
 			}
@@ -199,14 +199,14 @@ func thisLogEntryToDNSStruct(givenZeekLogEntry ZeekLogEntry, givenLogOpts *LogFi
 }
 
 // ParseDNSLog will parse through the given dns log (passed as a filename string)
-func ParseDNSLog(givenFilename string) (parsedResults []DNSEntry, err error) {
+func ParseDNSLog(givenFilename string) (parsedResults []DnsEntry, err error) {
 	allUnparsedEntries, header, initialParseErr := parseZeekLog(givenFilename)
 	if initialParseErr != nil {
 		err = initialParseErr
 		return
 	}
 	for _, thisResult := range allUnparsedEntries {
-		var dnsRes DNSEntry
+		var dnsRes DnsEntry
 		dnsRes, err = thisLogEntryToDNSStruct(thisResult, header)
 		if err != nil {
 			log.Error(err)
@@ -218,7 +218,7 @@ func ParseDNSLog(givenFilename string) (parsedResults []DNSEntry, err error) {
 }
 
 // ParseDNSRecurse will parse through the given directory and recurse further down (passed as a directory string)
-func ParseDNSRecurse(givenDirectory string) (allResults []DNSEntry, err error) {
+func ParseDNSRecurse(givenDirectory string) (allResults []DnsEntry, err error) {
 	var filenames []string
 
 	err = filepath.Walk(givenDirectory,
@@ -246,5 +246,12 @@ func ParseDNSRecurse(givenDirectory string) (allResults []DNSEntry, err error) {
 		return
 	}
 
+	return
+}
+
+// GetAllDnsForDay returns all entries on the given day from the default zeek directory as a slice of
+// parsed DnsEntry objects
+func GetAllDnsForDay(givenDay string) (allRes []DnsEntry, err error) {
+	allRes, err = ParseDNSRecurse("/usr/local/zeek/logs/" + givenDay + "/")
 	return
 }

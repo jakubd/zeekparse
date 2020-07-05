@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func BasicTestZeekParse(t *testing.T, givenEntry DNSEntry) {
+func BasicTestZeekParse(t *testing.T, givenEntry DnsEntry) {
 	assert.True(t, len(givenEntry.Uid) >= 14 && len(givenEntry.Uid) <= 19)
 	assert.True(t, net.ParseIP(givenEntry.IdOrigH) != nil && net.ParseIP(givenEntry.IdRespH) != nil)
 	assert.True(t, givenEntry.IdOrigP > 1 && givenEntry.IdOrigP < 65539)
