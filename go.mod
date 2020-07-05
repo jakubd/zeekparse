@@ -1,4 +1,4 @@
-module github.com/jakubd/go-zeek-logparse
+module github.com/jakubd/zeekparse
 
 go 1.13
 

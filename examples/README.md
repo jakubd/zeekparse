@@ -1,5 +1,6 @@
 This directory has some examples of using the zeekparse library
 for some analysis tasks.
 
-* dns-day.go - show all non-multicast dns queries for a given day
-* big-conn.go - show biggest connections for a given day
+* big-upload.go - show the biggest uploads for a given day initiated by local network user in the last 3 months.
+* dns-day.go - Show all DNS requests from the last 7 days except those domains in a whitelist.
+* dns-nonpopular - Show all DNS requests that do not appear on the magestic million list.

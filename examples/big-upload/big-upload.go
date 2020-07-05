@@ -1,12 +1,12 @@
 package main
 
-// big-conn.go
+// big-upload.go
 // -----------
 // Finds all uploads in the last 3 months originating from the local network and exceeding 2500 bytes
 
 import (
 	"fmt"
-	"github.com/jakubd/go-zeek-logparse"
+	"github.com/jakubd/zeekparse"
 	"strings"
 )
 

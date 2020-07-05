@@ -1,5 +1,6 @@
 # output binary
 readZeekLogs.out
+examples/dns-nonpopular/input/*.csv
 
 # Idea stuff
 *.iml
