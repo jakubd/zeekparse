@@ -63,6 +63,10 @@ func (thisEntry *DnsEntry) ShortPrint() {
 	fmt.Printf("[%s] %s -> %s\n", thisEntry.TS, thisEntry.Query, thisEntry.Answers)
 }
 
+func (thisEntry *DnsEntry) IsRDNSLookup() bool {
+	return strings.HasSuffix(thisEntry.Query, ".in-addr.arpa")
+}
+
 // given a zeeklogentry, it will create a DnsEntry
 func thisLogEntryToDNSStruct(givenZeekLogEntry ZeekLogEntry, givenLogOpts *LogFileOpts) (DNSEntry DnsEntry, err error) {
 

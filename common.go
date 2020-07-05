@@ -67,7 +67,15 @@ func DateRange(fromStr, toStr string) (dateStrRange []string) {
 // helpful for iterating recent results.
 func LastXMonths(x int) (dateStrRange []string) {
 	toTime := TimeToDateStr(time.Now())
-	fromTime := TimeToDateStr(time.Now().AddDate(0, -3, 0))
+	fromTime := TimeToDateStr(time.Now().AddDate(0, -x, 0))
+	return DateRange(fromTime, toTime)
+}
+
+// LastXDays returns a slice of datestrings (in the format YYYY-MM-DD) from the last X months
+// helpful for iterating recent results.
+func LastXDays(x int) (dateStrRange []string) {
+	toTime := TimeToDateStr(time.Now())
+	fromTime := TimeToDateStr(time.Now().AddDate(0, 0, -x))
 	return DateRange(fromTime, toTime)
 }
 
