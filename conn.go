@@ -282,7 +282,16 @@ func ParseConnRecurse(givenDirectory string) (allResults []ConnEntry, err error)
 
 // GetAllConnForDay returns all entries on the given day from the default zeek directory as a slice of
 // parsed ConnEntry objects
-func GetAllConnForDay(givenDay string) (allRes []ConnEntry, err error) {
-	allRes, err = ParseConnRecurse("/usr/local/zeek/logs/" + givenDay + "/")
+func GetAllConnForDay(givenDay string, givenZeekDir ...string) (allRes []ConnEntry, err error) {
+	var zeekDir string
+	if len(zeekDir) == 0 {
+		zeekDir = "/usr/local/zeek/logs/"
+	} else {
+		zeekDir = givenZeekDir[0]
+		if zeekDir[len(zeekDir)-1:] != "/" {
+			zeekDir = zeekDir + "/"
+		}
+	}
+	allRes, err = ParseConnRecurse( zeekDir + givenDay + "/")
 	return
 }

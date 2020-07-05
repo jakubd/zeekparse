@@ -255,7 +255,16 @@ func ParseDNSRecurse(givenDirectory string) (allResults []DnsEntry, err error) {
 
 // GetAllDnsForDay returns all entries on the given day from the default zeek directory as a slice of
 // parsed DnsEntry objects
-func GetAllDnsForDay(givenDay string) (allRes []DnsEntry, err error) {
-	allRes, err = ParseDNSRecurse("/usr/local/zeek/logs/" + givenDay + "/")
+func GetAllDnsForDay(givenDay string, givenZeekDir ...string) (allRes []DnsEntry, err error) {
+	var zeekDir string
+	if len(zeekDir) == 0 {
+		zeekDir = "/usr/local/zeek/logs/"
+	} else {
+		zeekDir = givenZeekDir[0]
+		if zeekDir[len(zeekDir)-1:] != "/" {
+			zeekDir = zeekDir + "/"
+		}
+	}
+	allRes, err = ParseDNSRecurse(zeekDir + givenDay + "/")
 	return
 }
