@@ -284,7 +284,7 @@ func ParseConnRecurse(givenDirectory string) (allResults []ConnEntry, err error)
 // parsed ConnEntry objects
 func GetAllConnForDay(givenDay string, givenZeekDir ...string) (allRes []ConnEntry, err error) {
 	var zeekDir string
-	if len(zeekDir) == 0 {
+	if len(givenZeekDir) == 0 {
 		zeekDir = "/usr/local/zeek/logs/"
 	} else {
 		zeekDir = givenZeekDir[0]

@@ -257,7 +257,7 @@ func ParseDNSRecurse(givenDirectory string) (allResults []DnsEntry, err error) {
 // parsed DnsEntry objects
 func GetAllDnsForDay(givenDay string, givenZeekDir ...string) (allRes []DnsEntry, err error) {
 	var zeekDir string
-	if len(zeekDir) == 0 {
+	if len(givenZeekDir) == 0 {
 		zeekDir = "/usr/local/zeek/logs/"
 	} else {
 		zeekDir = givenZeekDir[0]
