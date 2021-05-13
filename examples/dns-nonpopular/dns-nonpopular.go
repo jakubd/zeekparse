@@ -99,7 +99,7 @@ func getMajesticFilePath() string{
 	return path.Join(cwd, "examples", "dns-nonpopular", "input", "million.csv")
 }
 
-// download the url to the filepath
+// DownloadFile download the url to the filepath
 func DownloadFile(filepath string, url string) error {
 	resp, err := http.Get(url)
 	if err != nil {

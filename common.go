@@ -8,6 +8,14 @@ import (
 	"time"
 )
 
+// Proto is an enum of tcp protocol, either TCP or UDP
+type Proto string
+const (
+	TCP  Proto = "TCP"
+	UDP  Proto = "UDP"
+	NONE Proto = "None"
+)
+
 // UnixStrToTime will convert timestamps from unix format to a time.time
 func UnixStrToTime(givenUnixStr string) (resultTime time.Time, err error) {
 	var splitUnixTime []string
@@ -31,15 +39,6 @@ func UnixStrToTime(givenUnixStr string) (resultTime time.Time, err error) {
 	return
 }
 
-// Proto is an enum of tcp protocol, either TCP or UDP
-type Proto string
-
-const (
-	TCP  Proto = "TCP"
-	UDP  Proto = "UDP"
-	NONE Proto = "None"
-)
-
 // DateStrToTime converts a datestring of the format YYYY-MM-DD to a proper time.Time object
 func DateStrToTime(givenDateStr string) (t time.Time, err error) {
 	layout := "2006-01-02"
@@ -47,7 +46,7 @@ func DateStrToTime(givenDateStr string) (t time.Time, err error) {
 	return
 }
 
-// Converts a time.Time object to a date str in the format YYYY-MM-DD
+// TimeToDateStr Converts a time.Time object to a date str in the format YYYY-MM-DD
 func TimeToDateStr(givenTime time.Time) (t string) {
 	return givenTime.Format("2006-01-02")
 }
