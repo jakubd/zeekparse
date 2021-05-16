@@ -9,8 +9,6 @@ import (
 	"errors"
 	"fmt"
 	log "github.com/sirupsen/logrus"
-	"os"
-	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
@@ -223,48 +221,21 @@ func ParseDNSLog(givenFilename string) (parsedResults []DnsEntry, err error) {
 
 // ParseDNSRecurse will parse through the given directory and recurse further down (passed as a directory string)
 func ParseDNSRecurse(givenDirectory string) (allResults []DnsEntry, err error) {
-	var filenames []string
-
-	err = filepath.Walk(givenDirectory,
-		func(path string, info os.FileInfo, err error) error {
-			if err != nil {
-				return err
-			}
-			if strings.Contains(path, "dns.") {
-				filenames = append(filenames, path)
-			}
-			return nil
-		})
-
-	for _, thisFile := range filenames {
+	for thisFile := range PathRecurse(givenDirectory, "dns") {
 		thisResult, parseErr := ParseDNSLog(thisFile)
 		if parseErr != nil {
 			err = parseErr
 			return
 		}
-
 		allResults = append(allResults, thisResult...)
 	}
-
-	if err != nil {
-		return
-	}
-
 	return
 }
 
 // GetAllDnsForDay returns all entries on the given day from the default zeek directory as a slice of
 // parsed DnsEntry objects
 func GetAllDnsForDay(givenDay string, givenZeekDir ...string) (allRes []DnsEntry, err error) {
-	var zeekDir string
-	if len(givenZeekDir) == 0 {
-		zeekDir = "/usr/local/zeek/logs/"
-	} else {
-		zeekDir = givenZeekDir[0]
-		if zeekDir[len(zeekDir)-1:] != "/" {
-			zeekDir = zeekDir + "/"
-		}
-	}
+	zeekDir := GetZeekDir(givenZeekDir)
 	allRes, err = ParseDNSRecurse(zeekDir + givenDay + "/")
 	return
 }

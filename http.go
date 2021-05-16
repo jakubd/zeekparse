@@ -4,8 +4,6 @@ import (
 	"errors"
 	"fmt"
 	log "github.com/sirupsen/logrus"
-	"os"
-	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
@@ -158,48 +156,21 @@ func ParseHttpLog(givenFilename string) (parsedResults []HttpEntry, err error) {
 
 // ParseHTTPRecurse will parse through the given directory and recurse further down (passed as a directory string)
 func ParseHTTPRecurse(givenDirectory string) (allResults []HttpEntry, err error) {
-	var filenames []string
-
-	err = filepath.Walk(givenDirectory,
-		func(path string, info os.FileInfo, err error) error {
-			if err != nil {
-				return err
-			}
-			if strings.Contains(path, "http.") {
-				filenames = append(filenames, path)
-			}
-			return nil
-		})
-
-	for _, thisFile := range filenames {
+	for thisFile := range PathRecurse(givenDirectory, "http") {
 		thisResult, parseErr := ParseHttpLog(thisFile)
 		if parseErr != nil {
 			err = parseErr
 			return
 		}
-
 		allResults = append(allResults, thisResult...)
 	}
-
-	if err != nil {
-		return
-	}
-
 	return
 }
 
 // GetAllHttpForDay returns all entries on the given day from the default zeek directory as a slice of
 // parsed HttpEntry objects
 func GetAllHttpForDay(givenDay string, givenZeekDir ...string) (allRes []HttpEntry, err error) {
-	var zeekDir string
-	if len(givenZeekDir) == 0 {
-		zeekDir = "/usr/local/zeek/logs/"
-	} else {
-		zeekDir = givenZeekDir[0]
-		if zeekDir[len(zeekDir)-1:] != "/" {
-			zeekDir = zeekDir + "/"
-		}
-	}
+	zeekDir := GetZeekDir(givenZeekDir)
 	allRes, err = ParseHTTPRecurse(zeekDir + givenDay + "/")
 	return
 }

@@ -3,6 +3,8 @@ package zeekparse
 import (
 	"errors"
 	"net"
+	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
@@ -100,4 +102,42 @@ func StrBlankIfUnset(givenValue string, givenUnset string) string {
 func IntOrError(givenValue string) (asInt int, err error) {
 	asInt, err = strconv.Atoi(givenValue)
 	return
+}
+
+func GetZeekDir(givenZeekDir []string) string{
+	var zeekDir string
+	if len(givenZeekDir) == 0 {
+		zeekDir = "/usr/local/zeek/logs/"
+	} else {
+		zeekDir = givenZeekDir[0]
+		if zeekDir[len(zeekDir)-1:] != "/" {
+			zeekDir = zeekDir + "/"
+		}
+	}
+	return zeekDir
+}
+
+func PathRecurse(givenDirectory string, givenFilenameFragment string) <-chan string {
+	var filenames []string
+
+	_ = filepath.Walk(givenDirectory,
+		func(path string, info os.FileInfo, err error) error {
+			if err != nil {
+				return err
+			}
+			if strings.Contains(path, givenFilenameFragment+".") {
+				filenames = append(filenames, path)
+			}
+			return err
+		})
+
+	thisChan := make(chan string)
+	go func() {
+		for _, thisFile := range filenames {
+			thisChan <- thisFile
+		}
+		close(thisChan)
+	}()
+
+	return thisChan
 }
