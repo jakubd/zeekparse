@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-// dns-day.go - show the last week of non-local, non-reverse DNS resolutions and their replies exclude all domains
+// http-week.go - show the last week of non-local, non-reverse DNS resolutions and their replies exclude all domains
 // on a whitelist.
 
 func main() {

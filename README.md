@@ -10,6 +10,7 @@ This is a WIP and currently supports parsing the following logs:
 
 * dns.log
 * conn.log
+* http.log
 
 # Use Case
 
@@ -29,9 +30,9 @@ My plan is to support these logs: dns, conn, http, ssl, ssh and dhcp.
 * [X] Can parse log entries into Go structures.
 * [x] Can parse dns.log entries.
 * [x] Can parse conn.log entries.
+* [x] Can parse http.log entries.
 
 # Still to-do
-* [ ] Can parse http.log entries.
 * [ ] Can parse ssl.log entries.
 * [ ] Can parse x509.log entries.  
 * [ ] Can parse ssh.log entries.

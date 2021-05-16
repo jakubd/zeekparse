@@ -3,6 +3,9 @@ package zeekparse
 import (
 	"errors"
 	"fmt"
+	log "github.com/sirupsen/logrus"
+	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
@@ -35,13 +38,24 @@ type HttpEntry struct {
 func (thisEntry *HttpEntry) Print() {
 	fmt.Printf("(%s) client {%s:%d} asks server {%s:%d}:\n",
 		thisEntry.TS.String(), thisEntry.IdOrigH, thisEntry.IdOrigP, thisEntry.IdRespH, thisEntry.IdRespP)
-	fmt.Printf("HTTP %s %s http://%s:%d%s\n",
-		thisEntry.Version, thisEntry.Method,thisEntry.Host, thisEntry.IdRespP, thisEntry.Uri)
+
+	if len(thisEntry.Host) > 1 {
+		fmt.Printf("HTTP %s %s http://%s:%d%s\n",
+			thisEntry.Version, thisEntry.Method,thisEntry.Host, thisEntry.IdRespP, thisEntry.Uri)
+	} else {
+		fmt.Printf("HTTP %s %s http://%s:%d%s\n",
+			thisEntry.Version, thisEntry.Method,thisEntry.IdRespH, thisEntry.IdRespP, thisEntry.Uri)
+	}
 }
 
 // ShortPrint will just print the DNS Query and response as a one liner
 func (thisEntry *HttpEntry) ShortPrint() {
-	fmt.Printf("[%s] %s -> http://%s:%d%s\n", thisEntry.TS, thisEntry.IdOrigH, thisEntry.Host, thisEntry.IdRespP, thisEntry.Uri)
+	if len(thisEntry.Host) > 1 {
+		fmt.Printf("[%s] %s -> http://%s:%d%s\n", thisEntry.TS, thisEntry.IdOrigH, thisEntry.Host, thisEntry.IdRespP, thisEntry.Uri)
+	} else {
+		fmt.Printf("[%s] %s -> http://%s:%d%s\n", thisEntry.TS, thisEntry.IdOrigH, thisEntry.IdRespH, thisEntry.IdRespP, thisEntry.Uri)
+
+	}
 }
 
 func thisLogEntryToHttpStruct(givenZeekLogEntry ZeekLogEntry, givenLogOpts *LogFileOpts) (HttpEntry HttpEntry, err error) {
@@ -100,9 +114,14 @@ func thisLogEntryToHttpStruct(givenZeekLogEntry ZeekLogEntry, givenLogOpts *LogF
 				return
 			}
 		case "status_code":
-			HttpEntry.StatusCode, err = IntOrError(thisField.value)
-			if err != nil {
-				return
+
+			if thisField.value == givenLogOpts.unsetField {
+				HttpEntry.StatusCode = 0
+			} else {
+				HttpEntry.StatusCode, err = IntOrError(thisField.value)
+				if err != nil {
+					return
+				}
 			}
 		case "status_msg":
 			HttpEntry.StatusMsg = StrBlankIfUnset(thisField.value, givenLogOpts.unsetField)
@@ -115,5 +134,72 @@ func thisLogEntryToHttpStruct(givenZeekLogEntry ZeekLogEntry, givenLogOpts *LogF
 			}
 		}
 	}
+	return
+}
+
+// ParseHttpLog will parse through the given http log (passed as a filename string)
+func ParseHttpLog(givenFilename string) (parsedResults []HttpEntry, err error) {
+	allUnparsedEntries, header, initialParseErr := parseZeekLog(givenFilename)
+	if initialParseErr != nil {
+		err = initialParseErr
+		return
+	}
+	for _, thisResult := range allUnparsedEntries {
+		var httpRes HttpEntry
+		httpRes, err = thisLogEntryToHttpStruct(thisResult, header)
+		if err != nil {
+			log.Error(err)
+			return
+		}
+		parsedResults = append(parsedResults, httpRes)
+	}
+	return
+}
+
+// ParseHTTPRecurse will parse through the given directory and recurse further down (passed as a directory string)
+func ParseHTTPRecurse(givenDirectory string) (allResults []HttpEntry, err error) {
+	var filenames []string
+
+	err = filepath.Walk(givenDirectory,
+		func(path string, info os.FileInfo, err error) error {
+			if err != nil {
+				return err
+			}
+			if strings.Contains(path, "http.") {
+				filenames = append(filenames, path)
+			}
+			return nil
+		})
+
+	for _, thisFile := range filenames {
+		thisResult, parseErr := ParseHttpLog(thisFile)
+		if parseErr != nil {
+			err = parseErr
+			return
+		}
+
+		allResults = append(allResults, thisResult...)
+	}
+
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+// GetAllHttpForDay returns all entries on the given day from the default zeek directory as a slice of
+// parsed HttpEntry objects
+func GetAllHttpForDay(givenDay string, givenZeekDir ...string) (allRes []HttpEntry, err error) {
+	var zeekDir string
+	if len(givenZeekDir) == 0 {
+		zeekDir = "/usr/local/zeek/logs/"
+	} else {
+		zeekDir = givenZeekDir[0]
+		if zeekDir[len(zeekDir)-1:] != "/" {
+			zeekDir = zeekDir + "/"
+		}
+	}
+	allRes, err = ParseHTTPRecurse(zeekDir + givenDay + "/")
 	return
 }
