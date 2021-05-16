@@ -2,6 +2,7 @@ package zeekparse
 
 import (
 	"errors"
+	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -29,6 +30,18 @@ type HttpEntry struct {
 	StatusCode int			// status_code: count - status code (if any) returned by server
 	StatusMsg string		// status_msg:string - status message (if any) returned by server
 	MimeTypes []string		// orig_mime_types:vector[string] - mime types in resp (can be more than one)
+}
+
+func (thisEntry *HttpEntry) Print() {
+	fmt.Printf("(%s) client {%s:%d} asks server {%s:%d}:\n",
+		thisEntry.TS.String(), thisEntry.IdOrigH, thisEntry.IdOrigP, thisEntry.IdRespH, thisEntry.IdRespP)
+	fmt.Printf("HTTP %s %s http://%s:%d%s\n",
+		thisEntry.Version, thisEntry.Method,thisEntry.Host, thisEntry.IdRespP, thisEntry.Uri)
+}
+
+// ShortPrint will just print the DNS Query and response as a one liner
+func (thisEntry *HttpEntry) ShortPrint() {
+	fmt.Printf("[%s] %s -> http://%s:%d%s\n", thisEntry.TS, thisEntry.IdOrigH, thisEntry.Host, thisEntry.IdRespP, thisEntry.Uri)
 }
 
 func thisLogEntryToHttpStruct(givenZeekLogEntry ZeekLogEntry, givenLogOpts *LogFileOpts) (HttpEntry HttpEntry, err error) {
