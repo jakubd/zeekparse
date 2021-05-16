@@ -31,23 +31,39 @@ func main() {
 			"google.com",
 			"googleusercontent.com",
 			"gvt1.com",
-			// github stuff
+			"google.ca",
+			// git stuff
 			"github.com",
 			"githubusercontent.com",
 			"gitcdn.xyz",
+			"githubassets.com",
+			"gitlab.com",
 			// browser stuff
 			"userstyles.org",
 			"greasyfork.org",
 			"eff.org",
-			"lastpass.com",
 			"easylist.to",
 			"globalsign.com",
 			// dev stuff
 			"jetbrains.com",
 			"maxmind.com",
+			"vsassets.io",
+			"visualstudio.com",
+			"npmjs.org",
+			"stackoverflow.com",
+			"golang.com",
+			"golang.org",
+			"intellij.net.home",
+			"intellij.net",
 			// linux os stuff
 			"met.no",
 			"snapcraft.io",
+			"graylog.com",
+			"bitwarden.com",
+			"bgp.he.net",
+			"censys.io",
+			"influxdata.com",
+			"virtualbox.org",
 		}
 
 		// iterate all the days dns lookups
@@ -65,6 +81,10 @@ func main() {
 					if strings.HasSuffix(thisLookup.Query, thisWhiteListDomain) {
 						whiteListHit = true
 					}
+				}
+
+				if strings.HasSuffix(thisLookup.Query, ".arpa") {
+					whiteListHit = true
 				}
 
 				// and print if there was no hit.
