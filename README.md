@@ -5,7 +5,11 @@
 # zeekparse
 
 A log parser for common zeek text logs in Go. Allows you to query logs using logic written in Go.
-Supports: dns.log and conn.log
+
+This is a WIP and currently supports parsing the following logs:
+
+* dns.log
+* conn.log
 
 # Use Case
 
@@ -26,8 +30,9 @@ My plan is to support these logs: dns, conn, http, ssl, ssh and dhcp.
 * [x] Can parse dns.log entries.
 * [x] Can parse conn.log entries.
 
-# Logs that might be useful some day to add
+# Still to-do
 * [ ] Can parse http.log entries.
 * [ ] Can parse ssl.log entries.
+* [ ] Can parse x509.log entries.  
 * [ ] Can parse ssh.log entries.
 * [ ] Can parse dhcp.log entries. 
