@@ -20,6 +20,10 @@ import (
 // description of common DNS fields: https://www.zytrax.com/books/dns/ch15/
 // ------------
 
+// ------------------------------
+// ------ Entry Structure -------
+// ------------------------------
+
 // DnsEntry is a fully parsed dns.log line.
 type DnsEntry struct {
 	TS      time.Time // TS:time - timestamp
@@ -49,6 +53,10 @@ type DnsEntry struct {
 	Rejected   bool      // Rejected:bool - Rejected by server?
 }
 
+// ------------------------------
+// ----    Entry Prints   -------
+// ------------------------------
+
 // Print will just print the DNS Query and response to the screen and include the server client info.
 func (thisEntry *DnsEntry) Print() {
 	fmt.Printf("(%s) client {%s:%d} asks server {%s:%d}:\n",
@@ -64,6 +72,10 @@ func (thisEntry *DnsEntry) ShortPrint() {
 func (thisEntry *DnsEntry) IsRDNSLookup() bool {
 	return strings.HasSuffix(thisEntry.Query, ".in-addr.arpa")
 }
+
+// ------------------------------
+// ---- Main Parse Function -----
+// ------------------------------
 
 // given a zeeklogentry, it will create a DnsEntry
 func thisLogEntryToDNSStruct(givenZeekLogEntry ZeekLogEntry, givenLogOpts *LogFileOpts) (DNSEntry DnsEntry, err error) {
@@ -199,6 +211,10 @@ func thisLogEntryToDNSStruct(givenZeekLogEntry ZeekLogEntry, givenLogOpts *LogFi
 	}
 	return
 }
+
+// ------------------------------
+// ---- File Parse Recurse  -----
+// ------------------------------
 
 // ParseDNSLog will parse through the given dns log (passed as a filename string)
 func ParseDNSLog(givenFilename string) (parsedResults []DnsEntry, err error) {

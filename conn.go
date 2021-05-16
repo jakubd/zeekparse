@@ -58,6 +58,10 @@ func NewConnStateObj(givenCode string) *ConnStateObj {
 	return c
 }
 
+// ------------------------------
+// ------ Entry Structure -------
+// ------------------------------
+
 // ConnEntry is a fully parsed conn.log line
 type ConnEntry struct {
 	TS      time.Time // TS:time - timestamp
@@ -84,10 +88,18 @@ type ConnEntry struct {
 	// tunnel_parents: TODO: unimplemented: If this connection was over a tunnel, indicate the uid values for any encapsulating parent connections used over the lifetime of this inner connection.
 }
 
+// ------------------------------
+// ----    Entry Prints   -------
+// ------------------------------
+
 func (c *ConnEntry) Print() {
 	fmt.Printf("(%s) client {%s:%d} talks to {%s:%d}:\n",
 		c.TS.String(), c.IdOrigH, c.IdOrigP, c.IdRespH, c.IdRespP)
 }
+
+// ------------------------------
+// ---- Main Parse Function -----
+// ------------------------------
 
 func thisLogEntryToConnStruct(givenLogEntry ZeekLogEntry, givenLogOpts *LogFileOpts) (connEntry ConnEntry, err error) {
 	if len(givenLogOpts.setSeparator) == 0 {
@@ -226,6 +238,10 @@ func thisLogEntryToConnStruct(givenLogEntry ZeekLogEntry, givenLogOpts *LogFileO
 	}
 	return
 }
+
+// ------------------------------
+// ---- File Parse Recurse  -----
+// ------------------------------
 
 // ParseConnLog will parse through the given conn log (passed as a filename string)
 func ParseConnLog(givenFilename string) (parsedResults []ConnEntry, err error) {

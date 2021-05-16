@@ -11,6 +11,10 @@ import (
 
 // http log format described in https://docs.zeek.org/en/master/scripts/base/protocols/http/main.zeek.html#type-HTTP::Info
 
+// ------------------------------
+// ------ Entry Structure -------
+// ------------------------------
+
 type HttpEntry struct {
 	TS      time.Time 		// TS:time - timestamp
 	Uid     string    		// Uid:string - unique id
@@ -32,6 +36,10 @@ type HttpEntry struct {
 	StatusMsg string		// status_msg:string - status message (if any) returned by server
 	MimeTypes []string		// orig_mime_types:vector[string] - mime types in resp (can be more than one)
 }
+
+// ------------------------------
+// ----    Entry Prints   -------
+// ------------------------------
 
 func (thisEntry *HttpEntry) Print() {
 	fmt.Printf("(%s) client {%s:%d} asks server {%s:%d}:\n",
@@ -55,6 +63,10 @@ func (thisEntry *HttpEntry) ShortPrint() {
 
 	}
 }
+
+// ------------------------------
+// ---- Main Parse Function -----
+// ------------------------------
 
 func thisLogEntryToHttpStruct(givenZeekLogEntry ZeekLogEntry, givenLogOpts *LogFileOpts) (HttpEntry HttpEntry, err error) {
 	if len(givenLogOpts.setSeparator) == 0 {
@@ -135,7 +147,11 @@ func thisLogEntryToHttpStruct(givenZeekLogEntry ZeekLogEntry, givenLogOpts *LogF
 	return
 }
 
-// ParseHttpLog will parse through the given http log (passed as a filename string)
+// ------------------------------
+// ---- File Parse Recurse  -----
+// ------------------------------
+
+// ParseHttpLog will parse through the given single http log (passed as a filename string)
 func ParseHttpLog(givenFilename string) (parsedResults []HttpEntry, err error) {
 	allUnparsedEntries, header, initialParseErr := parseZeekLog(givenFilename)
 	if initialParseErr != nil {
