@@ -90,7 +90,8 @@ func IsMulticastOrBroadcastAddress(givenAddress string) bool {
 	return ip.IsMulticast()
 }
 
-// StrBlankIfUnset is a convenience function
+// StrBlankIfUnset is a convenience function for parsers that will
+// return the given value or a blank string if it matches the unset char given.
 func StrBlankIfUnset(givenValue string, givenUnset string) string {
 	if givenValue == givenUnset {
 		return ""
@@ -99,11 +100,7 @@ func StrBlankIfUnset(givenValue string, givenUnset string) string {
 	}
 }
 
-func IntOrError(givenValue string) (asInt int, err error) {
-	asInt, err = strconv.Atoi(givenValue)
-	return
-}
-
+// GetZeekDir will return the default zeek dir or what is passed in
 func GetZeekDir(givenZeekDir []string) string{
 	var zeekDir string
 	if len(givenZeekDir) == 0 {
@@ -117,6 +114,8 @@ func GetZeekDir(givenZeekDir []string) string{
 	return zeekDir
 }
 
+// PathRecurse is used for day recursion type functions.  Pass in a directory and a fragment
+// of the filename and it will return a channel of strings that have filenames.
 func PathRecurse(givenDirectory string, givenFilenameFragment string) <-chan string {
 	var filenames []string
 

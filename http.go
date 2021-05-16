@@ -102,12 +102,12 @@ func thisLogEntryToHttpStruct(givenZeekLogEntry ZeekLogEntry, givenLogOpts *LogF
 		case "origin":
 			HttpEntry.Origin = StrBlankIfUnset(thisField.value, givenLogOpts.unsetField)
 		case "request_body_len":
-			HttpEntry.ReqLen, err = IntOrError(thisField.value)
+			HttpEntry.ReqLen, err = strconv.Atoi(thisField.value)
 			if err != nil {
 				return
 			}
 		case "response_body_len":
-			HttpEntry.RespLen, err = IntOrError(thisField.value)
+			HttpEntry.RespLen, err = strconv.Atoi(thisField.value)
 			if err != nil {
 				return
 			}
@@ -116,7 +116,7 @@ func thisLogEntryToHttpStruct(givenZeekLogEntry ZeekLogEntry, givenLogOpts *LogF
 			if thisField.value == givenLogOpts.unsetField {
 				HttpEntry.StatusCode = 0
 			} else {
-				HttpEntry.StatusCode, err = IntOrError(thisField.value)
+				HttpEntry.StatusCode, err = strconv.Atoi(thisField.value)
 				if err != nil {
 					return
 				}
