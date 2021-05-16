@@ -11,6 +11,10 @@ import (
 
 // conn log format described in https://docs.zeek.org/en/current/scripts/base/protocols/conn/main.zeek.html#type-Conn::Info
 
+// ------------------------------
+// ----- Helper Structures ------
+// ------------------------------
+
 type ConnStateObj struct {
 	Code    string
 	Summary string

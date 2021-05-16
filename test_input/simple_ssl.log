@@ -1,0 +1,35 @@
+#separator \x09
+#set_separator	,
+#empty_field	(empty)
+#unset_field	-
+#path	ssl
+#open	2021-05-16-00-01-05
+#fields	ts	uid	id.orig_h	id.orig_p	id.resp_h	id.resp_p	version	cipher	curve	server_name	resumed	last_alert	next_protocol	established	cert_chain_fuids	client_cert_chain_fuids	subject	issuer	client_subject	client_issuer	validation_status
+#types	time	string	addr	port	addr	port	string	string	string	string	bool	string	string	bool	vector[string]	vector[string]	string	string	string	string	string
+1621137665.363720	CG9hY41LHn6GI49mta	192.168.1.110	54844	172.217.1.14	443	TLSv13	TLS_AES_128_GCM_SHA256	x25519	clients4.google.com	T	-	-	T	-	-	-	-	-	-	-
+1621137819.791670	CA1ojA4xixNTLa5XQf	192.168.1.110	36170	172.217.164.234	443	TLSv13	TLS_AES_128_GCM_SHA256	x25519	signaler-pa.googleapis.com	T	-	-	T	-	-	-	-	-	-	-
+1621137965.327582	CauSWS3GCqLSwueFHc	192.168.1.110	34144	172.217.0.238	443	TLSv13	TLS_AES_128_GCM_SHA256	x25519	docs.google.com	T	-	-	T	-	-	-	-	-	-	-
+1621138027.643720	CT9hMz3HHe1OtWjft4	192.168.1.110	51946	52.50.241.213	443	TLSv12	TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256	secp256r1	download.jetbrains.com	F	-	h2	T	FgR2UlAImauxnHCO9,FCklUw2ij2XLYndaoj,FajmSx4PaW2Z4gJYpc,F4Vj8R2VsYN4rND2h7	(empty)	CN=download.jetbrains.com	CN=Amazon,OU=Server CA 1B,O=Amazon,C=US	-	-	ok
+1621138026.559612	ChfJvG4aBouiXYnoAk	192.168.1.110	51932	52.50.241.213	443	TLSv12	TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256	-	download.jetbrains.com	F	-	h2	F	-	-	-	-	-	-	-
+1621138026.559612	CMe0If1Oax03tJHiF6	192.168.1.110	51930	52.50.241.213	443	-	-	-	download.jetbrains.com	F	-	-	F	-	-	-	-	-	-	-
+1621138026.559612	CrVaxU39HoQDc1pPW	192.168.1.110	51934	52.50.241.213	443	TLSv12	TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256	-	download.jetbrains.com	F	-	h2	F	-	-	-	-	-	-	-
+1621138027.411629	CY2nPqelmsRhqUvbe	192.168.1.110	34122	52.84.23.122	443	-	-	-	download-cf.jetbrains.com	F	-	-	F	-	-	-	-	-	-	-
+1621138027.411629	Cx1KF4PCV34YmLfef	192.168.1.110	34118	52.84.23.122	443	-	-	-	download-cf.jetbrains.com	F	-	-	F	-	-	-	-	-	-	-
+1621138027.411629	CDm4AE30c5amjo486	192.168.1.110	34120	52.84.23.122	443	-	-	-	download-cf.jetbrains.com	F	-	-	F	-	-	-	-	-	-	-
+1621138027.667611	Cmg16G4bXmo4VcZK7	192.168.1.110	51952	52.50.241.213	443	TLSv12	TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256	-	download.jetbrains.com	F	-	h2	F	-	-	-	-	-	-	-
+1621138027.643720	Cpu7tDp5tc1PC3Qek	192.168.1.110	51948	52.50.241.213	443	TLSv12	TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256	-	download.jetbrains.com	F	-	h2	F	-	-	-	-	-	-	-
+1621138027.635631	CEfHmh2bwndny49kta	192.168.1.110	51950	52.50.241.213	443	TLSv12	TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256	-	download.jetbrains.com	F	-	h2	F	-	-	-	-	-	-	-
+1621138028.335698	CsEm7c1ieY1SfwAkLa	192.168.1.110	34138	52.84.23.122	443	-	-	-	download-cf.jetbrains.com	F	-	-	F	-	-	-	-	-	-	-
+1621138028.335698	ClBOFJ3ikvTLha8cVc	192.168.1.110	34140	52.84.23.122	443	-	-	-	download-cf.jetbrains.com	F	-	-	F	-	-	-	-	-	-	-
+1621138028.335698	Cyk9xn34Sy4APE5gX5	192.168.1.110	34136	52.84.23.122	443	-	-	-	download-cf.jetbrains.com	F	-	-	F	-	-	-	-	-	-	-
+1621138028.335698	CyYwLphzG0JdJgISj	192.168.1.110	34134	52.84.23.122	443	TLSv13	TLS_AES_128_GCM_SHA256	secp256r1	download-cf.jetbrains.com	F	-	-	F	-	-	-	-	-	-	-
+1621138563.771623	CEaanA4kKDpj3qttZ	192.168.1.110	34180	172.217.0.238	443	TLSv13	TLS_AES_128_GCM_SHA256	x25519	clients6.google.com	T	-	-	T	-	-	-	-	-	-	-
+1621138336.999692	C1Vj0s1OXg5yQC3aK9	192.168.1.110	37900	52.51.53.188	443	-	-	-	versioncheck.graylog.com	F	-	-	F	-	-	-	-	-	-	-
+1621139569.015613	CNXmwYb8e4q66uti7	192.168.1.110	34334	140.82.113.26	443	TLSv13	TLS_AES_128_GCM_SHA256	x25519	alive.github.com	T	-	-	T	-	-	-	-	-	-	-
+1621137648.659632	CUvLvLJPWSievfqcc	192.168.1.110	54008	140.82.113.25	443	-	-	-	alive.github.com	F	-	-	F	-	-	-	-	-	-	-
+1621139763.791624	C0GhvD1aOI4O8onfBd	192.168.1.110	34186	172.217.0.238	443	TLSv13	TLS_AES_128_GCM_SHA256	x25519	clients6.google.com	T	-	-	T	-	-	-	-	-	-	-
+1621140137.035650	CRfXxl3Rptc7P8GWri	192.168.1.110	45852	52.17.197.100	443	TLSv12	TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384	-	versioncheck.graylog.com	F	-	-	F	-	-	-	-	-	-	-
+1621140963.787653	CpJ4Iu3PoDMy4z6TQk	192.168.1.110	42348	172.217.1.174	443	TLSv13	TLS_AES_128_GCM_SHA256	x25519	clients6.google.com	T	-	-	T	-	-	-	-	-	-	-
+1621140963.863695	CzKF4E4gwjxSEQonYd	192.168.1.110	42350	172.217.1.174	443	TLSv13	TLS_AES_128_GCM_SHA256	x25519	clients6.google.com	T	-	-	T	-	-	-	-	-	-	-
+1621141189.743662	CE3Ai01ip8MzR5Il36	192.168.1.110	54068	140.82.113.25	443	TLSv13	TLS_AES_128_GCM_SHA256	x25519	alive.github.com	T	-	-	T	-	-	-	-	-	-	-
+#close	2021-05-16-01-00-00
