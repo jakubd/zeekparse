@@ -1,8 +1,10 @@
 package zeekparse
 
 import (
+	"errors"
 	"fmt"
 	log "github.com/sirupsen/logrus"
+	"strconv"
 	"time"
 )
 
@@ -50,7 +52,39 @@ func (s *SSLEntry) ShortPrint() {
 // ---- Main Parse Function -----
 // ------------------------------
 
-func thisLogEntryToSSLStruct(givenZeekLogEntry ZeekLogEntry, givenLogOpts *LogFileOpts) (sslEntry SSLEntry, err error) {
+func thisLogEntryToSSLStruct(givenZeekLogEntry ZeekLogEntry, givenLogOpts *LogFileOpts) (SSLEntry SSLEntry, err error) {
+	if len(givenLogOpts.setSeparator) == 0 {
+		err = errors.New("no set seperator in header can't parse")
+		return
+	}
+
+	for _, thisField := range givenZeekLogEntry {
+		switch thisField.fieldName {
+		case "ts":
+			SSLEntry.TS, err = UnixStrToTime(thisField.value)
+			if err != nil {
+				return
+			}
+		case "uid":
+			SSLEntry.Uid = thisField.value
+		case "id.orig_h":
+			SSLEntry.IdOrigH = thisField.value
+		case "id.orig_p":
+			var convErr error
+			SSLEntry.IdOrigP, convErr = strconv.Atoi(thisField.value)
+			if convErr != nil {
+				err = convErr
+				return
+			}
+		case "id.resp_h":
+			SSLEntry.IdRespH = thisField.value
+		case "id.resp_p":
+			SSLEntry.IdRespP, err = strconv.Atoi(thisField.value)
+			if err != nil {
+				return
+			}
+		}
+	}
 	return
 }
 
