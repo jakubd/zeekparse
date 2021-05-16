@@ -42,10 +42,13 @@ type SSLEntry struct {
 func (s *SSLEntry) Print() {
 	fmt.Printf("(%s) client {%s:%d} talks to {%s:%d}:\n",
 		s.TS.String(), s.IdOrigH, s.IdOrigP, s.IdRespH, s.IdRespP)
+	fmt.Printf("V:%s SNI: %s CIPHER:%s\n", s.Version ,s.ServerName, s.Cipher)
 }
 
 func (s *SSLEntry) ShortPrint() {
-	fmt.Printf("[%s] %s:%d -> %s:%d\n", s.TS, s.IdOrigH, s.IdOrigP, s.IdRespH, s.IdRespP)
+	fmt.Printf("[%s] %s:%d -> %s:%d  %s\n",
+		s.TS, s.IdOrigH, s.IdOrigP, s.IdRespH, s.IdRespP,
+		s.ServerName)
 }
 
 // ------------------------------

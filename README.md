@@ -11,6 +11,7 @@ This is a WIP and currently supports parsing the following logs:
 * dns.log
 * conn.log
 * http.log
+* ssl.log
 
 # Use Case
 
@@ -31,9 +32,9 @@ My plan is to support these logs: dns, conn, http, ssl, ssh and dhcp.
 * [x] Can parse dns.log entries.
 * [x] Can parse conn.log entries.
 * [x] Can parse http.log entries.
+* [x] Can parse ssl.log entries.
 
 # Still to-do
-* [ ] Can parse ssl.log entries.
+
 * [ ] Can parse x509.log entries.  
-* [ ] Can parse ssh.log entries.
 * [ ] Can parse dhcp.log entries. 
