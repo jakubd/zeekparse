@@ -1,0 +1,11 @@
+#separator \x09
+#set_separator	,
+#empty_field	(empty)
+#unset_field	-
+#path	http
+#open	2021-05-06-09-19-43
+#fields	ts	uid	id.orig_h	id.orig_p	id.resp_h	id.resp_p	trans_depth	method	host	uri	referrer	version	user_agent	origin	request_body_len	response_body_len	status_code	status_msg	info_code	info_msg	tags	username	password	proxied	orig_fuids	orig_filenames	orig_mime_types	resp_fuids	resp_filenames	resp_mime_types
+#types	time	string	addr	port	addr	port	count	string	string	string	string	string	string	string	count	count	count	string	count	string	set[enum]	string	string	set[string]	vector[string]	vector[string]	vector[string]	vector[string]	vector[string]	vector[string]
+1620307183.044333	CWi2DJ2wECYYgCKctk	192.168.1.110	38142	192.168.1.140	8008	1	GET	192.168.1.140	/ssdp/device-desc.xml	-	1.1	Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.182 Safari/537.36	-	0	1073	200	OK	-	-	(empty)	-	-	-	-	-	-	F1ReOLRrdXZXbuDyc	-	application/xml
+1620307183.060305	CcqfMj1HGzzFDQUCDj	192.168.1.110	38102	192.168.1.132	8008	1	GET	192.168.1.132	/ssdp/device-desc.xml	-	1.1	Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.182 Safari/537.36	-	0	1072	200	OK	-	-	(empty)	-	-	-	-	-	-	FdQ7SI2xqJwffFiDOc	-	application/xml
+#close	2021-05-06-10-00-00

@@ -87,3 +87,17 @@ func IsMulticastOrBroadcastAddress(givenAddress string) bool {
 	ip := net.ParseIP(givenAddress)
 	return ip.IsMulticast()
 }
+
+// StrBlankIfUnset is a convenience function
+func StrBlankIfUnset(givenValue string, givenUnset string) string {
+	if givenValue == givenUnset {
+		return ""
+	} else {
+		return givenValue
+	}
+}
+
+func IntOrError(givenValue string) (asInt int, err error) {
+	asInt, err = strconv.Atoi(givenValue)
+	return
+}
