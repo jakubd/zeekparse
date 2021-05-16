@@ -2,7 +2,7 @@
 # pared down from the above and added deps download via go mod
 
 # Go parameters
-GOCMD=~/.go/bin/go
+GOCMD=go
 GOBUILD=$(GOCMD) build
 GOCLEAN=$(GOCMD) clean
 GOTEST=$(GOCMD) test
