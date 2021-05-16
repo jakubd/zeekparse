@@ -15,24 +15,24 @@ import (
 // ------------------------------
 
 type SSLEntry struct {
-	TS      time.Time 	// TS:time - timestamp
-	Uid     string    	// Uid:string - unique id
-	IdOrigH string    	// id_orig_h:addr - senders address
-	IdOrigP int       	// id_orig_p:addr - senders port
-	IdRespH string    	// id_resp_h:port - responders address
-	IdRespP int       	// id_resp_p:port - responders port
+	TS      time.Time 		// TS:time - timestamp
+	Uid     string    		// Uid:string - unique id
+	IdOrigH string    		// id_orig_h:addr - senders address
+	IdOrigP int       		// id_orig_p:addr - senders port
+	IdRespH string    		// id_resp_h:port - responders address
+	IdRespP int       		// id_resp_p:port - responders port
 	// ---------
-	Version string    	// version:string - SSL/TLS version that server chose
-	Cipher string     	// cipher: string - Cipher suite that server chose
-	Curve string	  	// curve: string - ECDH/ECDHE curve that server chose
-	ServerName string 	// server_name: string - SNI value.
-	Resumed bool 		// resumed:bool - Flag to indicate if the session was resumed reusing the key material exchanged in an earlier connection.
-	Established bool 	// established:bool - flag to indicate if successfully established or aborted mid-handshake.
-	Subject string		// subject: string - X509 subject if provided
-	Issuer string		// issuer: string - Signer of the X509 if provided.
-	ClientSubject string // client_subject: string - clients x509 subject if provided.
-	ClientIssuer string	 // client_issuer: string - clients x509 issuer if provided.
-	Validation string	// validation_status: string - result of validation status
+	Version string    		// version:string - SSL/TLS version that server chose
+	Cipher string     		// cipher: string - Cipher suite that server chose
+	Curve string	  		// curve: string - ECDH/ECDHE curve that server chose
+	ServerName string 		// server_name: string - SNI value.
+	Resumed bool 			// resumed:bool - Flag to indicate if the session was resumed reusing the key material exchanged in an earlier connection.
+	Established bool 		// established:bool - flag to indicate if successfully established or aborted mid-handshake.
+	ServerSubject string	// subject: string - X509 subject if provided
+	ServerIssuer string		// issuer: string - Signer of the X509 if provided.
+	ClientSubject string 	// client_subject: string - clients x509 subject if provided.
+	ClientIssuer string	 	// client_issuer: string - clients x509 issuer if provided.
+	Validation string		// validation_status: string - result of validation status
 }
 
 // ------------------------------
@@ -83,6 +83,28 @@ func thisLogEntryToSSLStruct(givenZeekLogEntry ZeekLogEntry, givenLogOpts *LogFi
 			if err != nil {
 				return
 			}
+		case "version":
+			SSLEntry.Version = StrBlankIfUnset(thisField.value, givenLogOpts.unsetField)
+		case "cipher":
+			SSLEntry.Cipher = StrBlankIfUnset(thisField.value, givenLogOpts.unsetField)
+		case "curve":
+			SSLEntry.Curve = StrBlankIfUnset(thisField.value, givenLogOpts.unsetField)
+		case "server_name":
+			SSLEntry.ServerName = StrBlankIfUnset(thisField.value, givenLogOpts.unsetField)
+		case "resumed":
+			SSLEntry.Resumed = thisField.value == "T"
+		case "established":
+			SSLEntry.Established = thisField.value == "T"
+		case "subject":
+			SSLEntry.ServerSubject = StrBlankIfUnset(thisField.value, givenLogOpts.unsetField)
+		case "issuer":
+			SSLEntry.ServerIssuer = StrBlankIfUnset(thisField.value, givenLogOpts.unsetField)
+		case "client_subject":
+			SSLEntry.ClientSubject = StrBlankIfUnset(thisField.value, givenLogOpts.unsetField)
+		case "client_issuer":
+			SSLEntry.ClientIssuer = StrBlankIfUnset(thisField.value, givenLogOpts.unsetField)
+		case "validation":
+			SSLEntry.Validation = StrBlankIfUnset(thisField.value, givenLogOpts.unsetField)
 		}
 	}
 	return
