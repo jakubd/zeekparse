@@ -12,6 +12,7 @@ This is a WIP and currently supports parsing the following logs:
 * conn.log
 * http.log
 * ssl.log
+* x509.log
 
 # Use Case
 

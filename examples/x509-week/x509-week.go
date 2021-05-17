@@ -1,11 +1,22 @@
 package main
 
 import (
+	"fmt"
 	"github.com/jakubd/zeekparse"
 )
 
-func main() {
+// Contains tells whether a contains x.
+func Contains(a []string, x string) bool {
+	for _, n := range a {
+		if x == n {
+			return true
+		}
+	}
+	return false
+}
 
+func main() {
+	var seenCerts []string
 	// lets look at last 12 days
 	for _, thisDay := range zeekparse.LastXDays(12) {
 
@@ -17,7 +28,13 @@ func main() {
 
 		// iterate all the days x509 certs
 		for _, thisCert := range thisDayCerts {
-			thisCert.ShortPrint()
+			if !Contains(seenCerts, thisCert.CertSubject) {
+				seenCerts = append(seenCerts, thisCert.CertSubject)
+			}
 		}
+	}
+
+	for _, thisCert := range seenCerts {
+		fmt.Println(thisCert)
 	}
 }
