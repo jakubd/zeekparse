@@ -17,7 +17,7 @@ func main() {
 
 		// iterate all the days x509 certs
 		for _, thisCert := range thisDayCerts {
-			thisCert.Print()
+			thisCert.ShortPrint()
 		}
 	}
 }

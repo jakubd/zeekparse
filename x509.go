@@ -36,13 +36,15 @@ type X509Entry struct {
 // ------------------------------
 
 func (s *X509Entry) Print() {
-	fmt.Printf("(%s) %s \n",
-		s.TS.String(), s.CertSubject)
+	fmt.Printf("(%s) %d bit %s cert: %s  validity:%s--%s issuer:%s\n",
+		s.TS.String(), s.CertKeyLength, s.CertKeyType ,s.CertSubject,
+		s.CertNotValidBefore.Format("01/02/06"), s.CertNotValidAfter.Format("01/02/06"),
+		s.CertIssuer)
 }
 
 func (s *X509Entry) ShortPrint() {
-	fmt.Printf("[%s] \n",
-		s.TS)
+	fmt.Printf("[%s]%s\n",
+		s.TS, s.CertSubject)
 }
 
 // ------------------------------
