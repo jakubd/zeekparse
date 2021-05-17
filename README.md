@@ -33,8 +33,8 @@ My plan is to support these logs: dns, conn, http, ssl, ssh and dhcp.
 * [x] Can parse conn.log entries.
 * [x] Can parse http.log entries.
 * [x] Can parse ssl.log entries.
+* [x] Can parse x509.log entries.
 
 # Still to-do
 
-* [ ] Can parse x509.log entries.  
 * [ ] Can parse dhcp.log entries. 
